@@ -139,18 +139,41 @@ main {
     color: #e6edf3 !important;
 }
 
-/* Navbar item hover/focus/active states - theme-aware */
-.navbar-item:hover,
+/* Navbar item hover/focus/active states - theme-aware.
+   Hover bg only for real mice (@media hover:hover): touch browsers
+   stick :hover on the tapped element, which would pin the highlight.
+   Focus bg only for keyboard (focus-visible): after a mouse/touch
+   click the link keeps :focus, which would otherwise pin the
+   highlight until something else is focused. */
+@media (hover: hover) {
+    .navbar-item:hover,
+    .navbar-link:hover {
+        background-color: var(--hover-bg) !important;
+        color: var(--text-color) !important;
+    }
+}
+
 .navbar-item:focus,
-.navbar-link:hover,
 .navbar-link:focus {
-    background-color: var(--hover-bg) !important;
     color: var(--text-color) !important;
 }
 
 .navbar-item:active,
 .navbar-link:active {
     background-color: var(--active-bg) !important;
+}
+
+/* No lingering background after pointer clicks; keyboard gets a ring */
+.navbar-item:focus:not(:focus-visible),
+.navbar-link:focus:not(:focus-visible) {
+    background-color: transparent !important;
+}
+
+.navbar-item:focus-visible,
+.navbar-link:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
+    border-radius: 4px;
 }
 
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
