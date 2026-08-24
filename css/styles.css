@@ -11,6 +11,7 @@
     --active-bg: rgba(44, 40, 37, 0.10);
     --grain-opacity: 0.10;
     --grain-blend: normal;
+    --radius: 12px;
 
     color-scheme: light;
 }
@@ -49,7 +50,7 @@ main {
 .paper-container {
     background: var(--paper-color);
     box-shadow: 0 4px 12px var(--shadow-color);
-    border-radius: 8px;
+    border-radius: var(--radius);
     max-width: 900px;
     margin: 1rem auto;
     padding: 2rem;
@@ -59,7 +60,7 @@ main {
 
 .paper-card {
     background: var(--paper-color);
-    border-radius: 4px;
+    border-radius: var(--radius);
     box-shadow: 0 2px 8px var(--shadow-color);
     margin-bottom: 1.5rem;
     padding: 1.5rem;
@@ -124,7 +125,7 @@ main {
     z-index: 100;
     margin: 0 auto;
     max-width: 900px;
-    border-radius: 0 0 8px 8px;
+    border-radius: 0 0 var(--radius) var(--radius);
 }
 
 .navbar-item strong {
@@ -244,15 +245,17 @@ a {
     }
 
     /* Dropdown menu exists only in the burger range, so its themed
-       background lives here, not globally (see comment above). */
+       background lives here, not globally (see comment above).
+       Edge-aligned with the navbar (left: 0 / 100%) so it matches the
+       container's width instead of floating 1rem inside it. */
     .navbar-menu {
         background: var(--paper-color);
         position: absolute;
-        width: calc(100% - 2rem);
-        left: 1rem;
+        width: 100%;
+        left: 0;
         margin-top: 0.5rem;
         box-shadow: 0 4px 12px var(--shadow-color);
-        border-radius: 8px;
+        border-radius: var(--radius);
         padding: 1rem;
     }
 
