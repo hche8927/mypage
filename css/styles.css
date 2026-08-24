@@ -229,9 +229,12 @@ a {
 }
 
 /* ===== Responsive Design =====
-   Layout-only: the theme colors for the burger/dropdown are global above,
-   so they work across the whole 769–1023px desktop "tablet" range too. */
-@media screen and (max-width: 768px) {
+   Mobile layout — breakpoint matches Bulma's own burger breakpoint (1023px),
+   so the layout is strictly binary: below 1024px we get the compact
+   mobile layout with a floating dropdown (no in-flow push-down); at
+   1024px+ the horizontal desktop nav. No intermediate "tablet" state.
+   Theme colors for the burger/dropdown are global above. */
+@media screen and (max-width: 1023px) {
     .paper-container {
         margin: 1rem;
         padding: 1rem;
