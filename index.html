@@ -6,7 +6,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>H.C.</title>
-        <meta name="description" content="Haodong (Tom) Chen — Machine Learning Engineer and Researcher. Computer vision, 3D reconstruction, generative AI.">
+        <meta name="description" content="Haodong (Tom) Chen — personal website.">
 
         <!-- Add Favicon -->
 
@@ -28,14 +28,17 @@
         <link
             href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
             rel="stylesheet">
-        <link
-            href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap"
-            rel="stylesheet">
-        <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet">
 
         <link rel="stylesheet" href="css/styles.css">
+
+        <script>
+            // Apply saved theme before paint to avoid flash
+            (function () {
+                const theme = localStorage.getItem('theme') ||
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script>
     </head>
 
     <body>
@@ -57,64 +60,32 @@
             <div class="navbar-menu">
                 <div class="navbar-end">
                     <a class="navbar-item" href="#about">About</a>
-                    <a class="navbar-item" href="#experience">Experience</a>
                     <a class="navbar-item" href="#research">Research</a>
                     <a class="navbar-item" href="#projects">Projects</a>
-                    <a class="navbar-item" href="#contact">Contact</a>
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
-                            <span class="icon">
-                                <i class="fas fa-globe"></i>
-                            </span>
-                            <span id="currentLang">English</span>
-                        </a>
-                        <div class="navbar-dropdown">
-                            <a class="navbar-item"
-                                onclick="changeLanguage('en')">English</a>
-                            <a class="navbar-item"
-                                onclick="changeLanguage('zh')">中文</a>
-                        </div>
-                    </div>
+                    <a class="navbar-item" href="#" id="theme-toggle"
+                        aria-label="Toggle dark mode">
+                        <span class="icon">
+                            <i class="fas fa-moon" id="theme-icon"></i>
+                        </span>
+                    </a>
                 </div>
             </div>
         </nav>
 
         <!-- Main Content -->
         <main>
-            <!-- Welcome Paper -->
+            <!-- Welcome -->
             <div id="welcome" class="paper-container">
-                <canvas id="perlin-noise"></canvas>
                 <section class="hero is-medium">
                     <div class="hero-body">
                         <h1 class="title is-1 has-text-centered"
                             data-aos="fade-up">
                             Hello, I'm <br>
-                            Haodong Chen <br>
-                            <hr
-                                style="width: 300px; margin: 1rem auto 0.5rem auto;">
-                            陈 浩 东 <br>
-                            <span class="is-size-6">You can also call me
-                                Tom</span>
+                            Haodong Chen
                         </h1>
-                        <h3 class="title is-4 has-text-centered"
-                            data-i18n="welcome.tagline">
-                            Machine Learning Engineer · Researcher
+                        <h3 class="title is-4 has-text-centered has-text-grey">
+                            Website under renovation — full content coming soon.
                         </h3>
-                        <div class="has-text-centered mt-4">
-                            <a class="button is-light is-medium mr-2"
-                                href="mailto:hche8927@outlook.com">
-                                <span class="icon"><i
-                                        class="fas fa-envelope"></i></span>
-                                <span>Email</span>
-                            </a>
-                            <a class="button is-light is-medium"
-                                href="https://github.com/hche8927" target="_blank"
-                                rel="noopener">
-                                <span class="icon"><i
-                                        class="fab fa-github"></i></span>
-                                <span>GitHub</span>
-                            </a>
-                        </div>
                     </div>
                 </section>
             </div>
@@ -128,104 +99,8 @@
                             I am a <b>Machine Learning Engineer and
                             Researcher</b> working across <b>computer
                             vision</b>, <b>3D reconstruction</b>, and
-                            <b>generative AI</b>. My PhD focused on real-time
-                            rendering and neural scene reconstruction, with
-                            published work on splatting, event-based sensing,
-                            and multi-modal segmentation. I take models from
-                            research into production — building segmentation,
-                            diffusion, and agent-based systems that have
-                            reduced turnaround on production workloads from
-                            days to minutes.
-                        </p>
-                    </div>
-
-                    <h3 class="title is-4" data-i18n="about.education.title">Education</h3>
-                    <div class="content">
-                        <ul>
-                            <li><b>PhD in Computer Science · University of
-                                    Sydney</b><br>
-                                <span class="is-size-6">Thesis: Towards
-                                    Efficient High Fidelity 3D Reconstruction
-                                    and Novel View Synthesis (2023 –
-                                    2026)</span></li>
-                            <li><b>Bachelor of Computer Science and Technology
-                                    (Honours) · University of Sydney</b><br>
-                                <span class="is-size-6">2016 – 2021</span></li>
-                        </ul>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Experience Paper -->
-            <div id="experience" class="paper-container" data-aos="fade-up">
-                <section>
-                    <h2 class="title is-2">Experience</h2>
-
-                    <div class="content mb-5">
-                        <h3 class="title is-4 mb-1">Machine Learning Engineer ·
-                            FIN VFX</h3>
-                        <p class="is-size-6 has-text-grey mb-2">Sep 2025 –
-                            Present</p>
-                        <p>
-                            Building ML tools for production at an
-                            Emmy-nominated VFX studio. Led <b>AI rotoscoping</b>
-                            (SAM2/SAM3 into Nuke), <b>diffusion face
-                            replacement</b> (Wan 2.2 Animate LoRA), <b>stereo
-                            super-resolution benchmarking</b>, and an <b>Artist
-                            AI Agent</b> from RAG prototype to Pydantic AI +
-                            MCP. Credited on <i>Billie Eilish: Hit Me Hard and
-                            Soft — The Tour</i>.
-                        </p>
-                    </div>
-
-                    <div class="content mb-5">
-                        <h3 class="title is-4 mb-1">Research Assistant ·
-                            University of Sydney</h3>
-                        <p class="is-size-6 has-text-grey mb-2">Feb 2022 –
-                            Present</p>
-                        <p>
-                            Research in 3D computer vision spanning real-time
-                            3D reconstruction, image processing, and
-                            photorealistic rendering. Supervised eight Honours
-                            and Master's students, three of whom published in
-                            peer-reviewed venues.
-                        </p>
-                    </div>
-
-                    <div class="content mb-5">
-                        <h3 class="title is-4 mb-1">Tutor and Teaching
-                            Assistant · University of Sydney</h3>
-                        <p class="is-size-6 has-text-grey mb-2">Feb 2021 – Nov
-                            2024</p>
-                        <p>
-                            Tutored six courses across programming, SQL and
-                            data analysis, and systems analysis; supervised two
-                            capstone teams through full delivery cycles.
-                        </p>
-                    </div>
-
-                    <div class="content mb-5">
-                        <h3 class="title is-4 mb-1">Software Engineer ·
-                            Software&amp;Data Pty Ltd</h3>
-                        <p class="is-size-6 has-text-grey mb-2">Apr 2019 – Nov
-                            2019</p>
-                        <p>
-                            Full-stack development of an automated invoice
-                            management system: email intake, OCR document
-                            parsing, structured data entry.
-                        </p>
-                    </div>
-
-                    <div class="content">
-                        <h3 class="title is-4 mb-1">Software Engineer · Hampr
-                            Pty Ltd</h3>
-                        <p class="is-size-6 has-text-grey mb-2">Mar 2018 – Aug
-                            2018</p>
-                        <p>
-                            Front end of a geo-fencing web application for
-                            restaurant delivery zones and pricing logic,
-                            delivered to production in a three-person agile
-                            team.
+                            <b>generative AI</b>. I take models from research
+                            into production.
                         </p>
                     </div>
                 </section>
@@ -234,44 +109,16 @@
             <!-- Research Paper -->
             <div id="research" class="paper-container" data-aos="fade-up">
                 <section>
-                    <h2 class="title is-2">Research Highlights</h2>
-                    <div class="columns is-multiline">
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">AMMNet: Asymmetric
-                                    Multi-Modal Network for Earth Observation
-                                    Segmentation</h3>
-                                <p class="content">Asymmetric architecture fusing RGB with Digital Surface Model data — state-of-the-art on ISPRS Vaihingen &amp; Potsdam at reduced cost. <i>Neurocomputing 2026.</i></p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Skim Transformer for
-                                    Light Field Super-resolution</h3>
-                                <p class="content">Branches attend over skimmed subsets of sub-aperture images, disentangling disparity with fewer parameters. <i>IEEE TMM 2026.</i></p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Sparse-View Splatting via
-                                    Cascade Depth Loss</h3>
-                                <p class="content">Hierarchical Depth-Guided Splatting (HDGS) with Cascade Pearson Correlation Loss — SOTA novel-view synthesis on LLFF &amp; DTU. PhD core contribution. <i>ICME 2026.</i></p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Fast 3D Splatting with
-                                    Linear Kernels</h3>
-                                <p class="content">3D Linear Splatting replaces the Gaussian fall-off with a bounded linear kernel — 30%+ faster real-time rendering with sharper detail. PhD core contribution. <i>arXiv 2024, under review IEEE TVCG.</i></p>
-                            </div>
-                        </div>
-                        <div class="column is-12">
-                            <div class="paper-card">
-                                <h3 class="title is-4">3D Reconstruction Using
-                                    Neuromorphic Cameras</h3>
-                                <p class="content">End-to-end voxel pipeline mapping raw event streams to occupancy without physical priors or known camera parameters, plus a released synthetic dataset. PhD core contribution. <i>ICVR 2023, ICME 2025.</i></p>
-                            </div>
-                        </div>
+                    <h2 class="title is-2">Research</h2>
+                    <div class="content">
+                        <p>
+                            My research spans real-time 3D reconstruction,
+                            neural scene representations (splatting),
+                            event-based vision, multi-modal segmentation, and
+                            light field imaging — with publications in venues
+                            including Neurocomputing, IEEE TMM, and ICME.
+                            Detailed list coming soon.
+                        </p>
                     </div>
                 </section>
             </div>
@@ -280,53 +127,11 @@
             <div id="projects" class="paper-container" data-aos="fade-up">
                 <section>
                     <h2 class="title is-2">Projects</h2>
-                    <div class="columns is-multiline">
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">VR Solar System</h3>
-                                <p class="content">An immersive Unity-based VR simulation of the solar system, enabling interactive exploration of planetary motion for education.</p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Catering Geofencing</h3>
-                                <p class="content">Geo-fencing web app for restaurant delivery zones and pricing logic — map API integration and geo-fencing algorithms, delivered to production.</p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Invoice Management</h3>
-                                <p class="content">Full-stack automated invoice processing: email intake, OCR document parsing, and structured data entry replacing manual workflow.</p>
-                            </div>
-                        </div>
-                        <div class="column is-6">
-                            <div class="paper-card">
-                                <h3 class="title is-4">Artist AI Agent @ FIN VFX</h3>
-                                <p class="content">Industry-academic collaboration giving artists direct access to ShotGrid data via natural language — from RAG prototype to Pydantic AI + MCP implementation, supervised three Master's students through three architectures.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <!-- Contact Paper -->
-            <div id="contact" class="paper-container" data-aos="fade-up">
-                <section>
-                    <h2 class="title is-2">Contact</h2>
                     <div class="content">
-                        <p>Feel free to reach out via email or phone.</p>
-                        <ul>
-                            <li><span class="icon"><i
-                                        class="fas fa-envelope"></i></span>
-                                Email: <a
-                                    href="mailto:hche8927@outlook.com">hche8927@outlook.com</a></li>
-                            <li><span class="icon"><i
-                                        class="fas fa-phone"></i></span>
-                                Phone: +61 451 506 430</li>
-                            <li><span class="icon"><i
-                                        class="fas fa-location-dot"></i></span>
-                                Location: Sydney, Australia</li>
-                        </ul>
+                        <p>
+                            A selection of engineering and research projects is
+                            being prepared for publication. Check back soon.
+                        </p>
                     </div>
                 </section>
             </div>
@@ -334,8 +139,7 @@
 
         <!-- JavaScript Dependencies -->
         <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-        <script src="js/perlin_noise.js"></script>
         <script src="js/init.js"></script>
-        <script src="js/i18n.js"></script>
+        <script src="js/theme.js"></script>
     </body>
 </html>

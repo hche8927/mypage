@@ -106,3 +106,39 @@ main {
     mix-blend-mode: multiply;
     z-index: 1;
 }
+/* ===== Dark Mode ===== */
+:root[data-theme="dark"] {
+    --paper-color: #1c2128;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --bg-color: #0d1117;
+}
+
+:root[data-theme="dark"] body {
+    background-color: #0d1117;
+    background-image: none;
+    color: #e6edf3;
+}
+
+:root[data-theme="dark"] .navbar,
+:root[data-theme="dark"] .paper-container,
+:root[data-theme="dark"] .paper-card {
+    color: #e6edf3;
+}
+
+:root[data-theme="dark"] .navbar-item,
+:root[data-theme="dark"] .navbar-link {
+    color: #e6edf3;
+}
+
+:root[data-theme="dark"] .title,
+:root[data-theme="dark"] .content {
+    color: #e6edf3;
+}
+
+:root[data-theme="dark"] .has-text-grey {
+    color: #9ea7b3 !important;
+}
+
+:root[data-theme="dark"] a {
+    color: #6cb2ff;
+}
