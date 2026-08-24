@@ -1,2 +1,0 @@
-# mypage
-My personal page.

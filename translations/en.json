@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "about": "About",
+        "projects": "Projects",
+        "contact": "Contact",
+        "language": "English"
+    },
+    "welcome": {
+        "hello": "Hello, I'm",
+        "callMeTom": "You can also call me Tom"
+    },
+    "about": {
+        "title": "About Me",
+        "content": "I am a 3D Computer Vision and AI researcher with a strong passion for learning and creating innovative solutions using emerging technologies. I enjoy tackling complex challenges and  turning new ideas into tangible results."
+    },
+    "projects": {
+        "title": "Projects",
+        "vrSolarSystem": {
+            "title": "VR Solar System",
+            "description": "Project description goes here... ... ..."
+        },
+        "cateringGeofencing": {
+            "title": "Catering Geofencing",
+            "description": "Project description goes here..."
+        },
+        "invoiceManagement": {
+            "title": "Invoice Management",
+            "description": "Project description goes here..."
+        }
+    },
+    "contact": {
+        "title": "Contact",
+        "content": "Get in touch with me..."
+    }
+}

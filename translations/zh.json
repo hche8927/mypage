@@ -1,0 +1,35 @@
+{
+    "nav": {
+        "about": "简介",
+        "projects": "项目",
+        "contact": "联系",
+        "language": "中文"
+    },
+    "welcome": {
+        "hello": "你好，我是",
+        "callMeTom": "你也可以叫我Tom"
+    },
+    "about": {
+        "title": "简介",
+        "content": "我热衷于学习和使用新技术制作东西，特别对3D相关的内容感兴趣。目前，我正在悉尼大学攻读博士学位，预计2025年毕业。"
+    },
+    "projects": {
+        "title": "项目",
+        "vrSolarSystem": {
+            "title": "VR太阳系模拟器",
+            "description": "项目描述..."
+        },
+        "cateringGeofencing": {
+            "title": "地理围栏系统",
+            "description": "项目描述..."
+        },
+        "invoiceManagement": {
+            "title": "发票管理系统",
+            "description": "项目描述..."
+        }
+    },
+    "contact": {
+        "title": "联系方式",
+        "content": "联系我..."
+    }
+}
