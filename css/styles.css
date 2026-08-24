@@ -51,7 +51,7 @@ main {
     box-shadow: 0 4px 12px var(--shadow-color);
     border-radius: 8px;
     max-width: 900px;
-    margin: 2rem auto;
+    margin: 1rem auto;
     padding: 2rem;
     position: relative;
     overflow: hidden;
