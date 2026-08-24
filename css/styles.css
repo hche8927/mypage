@@ -238,10 +238,12 @@ a {
     .paper-container {
         margin: 1rem auto;
         padding: 1rem;
+        max-width: min(900px, calc(100% - 2rem));
     }
 
     .navbar {
         margin: 0 auto;
+        max-width: min(900px, calc(100% - 2rem));
     }
 
     .navbar-menu {
