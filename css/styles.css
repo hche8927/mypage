@@ -1,28 +1,47 @@
+/* ===== Theme tokens ===== */
 :root {
     --paper-color: #ffffff;
     --shadow-color: rgba(0, 0, 0, 0.1);
     --bg-color: #f5f5f5;
+    --text-color: #24292f;
+    --text-muted: #57606a;
+    --link-color: #0969da;
+    --icon-color: #24292f;
+    --hover-bg: rgba(0, 0, 0, 0.05);
+    --active-bg: rgba(0, 0, 0, 0.1);
+    --pattern-color: #cccccc;
     --chinese-font: 'ZCOOL QingKe HuangYou', cursive;
+
+    color-scheme: light;
 }
 
-/* Base Styles */
+/* ===== Base Styles ===== */
 body,
 html {
-    /* background-color: var(--bg-color); */
-    background-color: #f5f5f5;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='126' height='84' viewBox='0 0 126 84'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.4'%3E%3Cpath d='M126 83v1H0v-2h40V42H0v-2h40V0h2v40h40V0h2v40h40V0h2v83zm-2-1V42H84v40h40zM82 42H42v40h40V42zm-50-6a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm96 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm-42 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm30-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM20 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 24a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM92 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM92 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24-42a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-color: var(--bg-color);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='126' height='84' viewBox='0 0 126 84'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.4'%3E%3Cpath d='M126 83v1H0v-2h40V42H0v-2h40V0h2v40h40V0h2v40h40V0h2v83zm-2-1V42H84v40h40zM82 42H42v40h40V42zm-50-6a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm96 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm-42 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm30-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM20 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 24a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     font-family: 'Noto Sans', sans-serif;
+    color: var(--text-color);
     margin: 0;
     padding: 0;
 }
 
-/* Layout Components */
+/* Smooth theme transition */
+body,
+.navbar,
+.paper-container,
+.paper-card,
+.navbar-item {
+    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ===== Layout Components ===== */
 main {
     min-height: 100vh;
     padding-bottom: 1rem;
 }
 
-/* Paper Components */
+/* ===== Paper Components ===== */
 .paper-container {
     background: var(--paper-color);
     box-shadow: 0 4px 12px var(--shadow-color);
@@ -47,7 +66,7 @@ main {
     transform: translateY(-2px);
 }
 
-/* Navigation */
+/* ===== Navigation ===== */
 .navbar {
     background: var(--paper-color);
     box-shadow: 0 2px 8px var(--shadow-color);
@@ -60,15 +79,58 @@ main {
 }
 
 .navbar-item strong {
-    font-family: 'Pacifico', cursive;
+    font-family: var(--chinese-font), cursive;
 }
 
-/* Typography */
+/* Navbar item hover/focus/active states — theme-aware */
+.navbar-item:hover,
+.navbar-item:focus,
+.navbar-link:hover,
+.navbar-link:focus {
+    background-color: var(--hover-bg) !important;
+    color: var(--text-color) !important;
+}
+
+.navbar-item:active,
+.navbar-link:active {
+    background-color: var(--active-bg) !important;
+}
+
+/* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
+#theme-toggle:focus:not(:focus-visible) {
+    background-color: transparent !important;
+}
+#theme-toggle:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: -2px;
+    border-radius: 4px;
+}
+
+/* Theme toggle icon inherits text color */
+#theme-toggle .icon,
+#theme-icon {
+    color: var(--icon-color);
+}
+
+/* ===== Typography ===== */
 .cn-text {
     font-family: var(--chinese-font);
 }
 
-/* Responsive Design */
+.title,
+.content {
+    color: var(--text-color);
+}
+
+.has-text-grey {
+    color: var(--text-muted) !important;
+}
+
+a {
+    color: var(--link-color);
+}
+
+/* ===== Responsive Design ===== */
 @media screen and (max-width: 768px) {
     .paper-container {
         margin: 1rem;
@@ -91,54 +153,34 @@ main {
     }
 }
 
-/* Perlin Noise Styles */
-#perlin-noise {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-#perlin-noise {
-    opacity: 0.2;
-    mix-blend-mode: multiply;
-    z-index: 1;
-}
 /* ===== Dark Mode ===== */
 :root[data-theme="dark"] {
-    --paper-color: #1c2128;
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --paper-color: #161b22;
+    --shadow-color: rgba(0, 0, 0, 0.6);
     --bg-color: #0d1117;
+    --text-color: #e6edf3;
+    --text-muted: #9ea7b3;
+    --link-color: #6cb2ff;
+    --icon-color: #e6edf3;
+    /* Subtle light pattern dots on dark bg for contrast */
+    --pattern-color: #30363d;
+    --hover-bg: rgba(255, 255, 255, 0.08);
+    --active-bg: rgba(255, 255, 255, 0.14);
+
+    color-scheme: dark;
 }
 
 :root[data-theme="dark"] body {
-    background-color: #0d1117;
-    background-image: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='126' height='84' viewBox='0 0 126 84'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2330363d' fill-opacity='0.55'%3E%3Cpath d='M126 83v1H0v-2h40V42H0v-2h40V0h2v40h40V0h2v40h40V0h2v83zm-2-1V42H84v40h40zM82 42H42v40h40V42zm-50-6a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm96 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm-42 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm30-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM20 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 24a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Bulma is-light buttons in dark mode */
+:root[data-theme="dark"] .button.is-light {
+    background-color: #21262d;
     color: #e6edf3;
+    border-color: #30363d;
 }
 
-:root[data-theme="dark"] .navbar,
-:root[data-theme="dark"] .paper-container,
-:root[data-theme="dark"] .paper-card {
-    color: #e6edf3;
-}
-
-:root[data-theme="dark"] .navbar-item,
-:root[data-theme="dark"] .navbar-link {
-    color: #e6edf3;
-}
-
-:root[data-theme="dark"] .title,
-:root[data-theme="dark"] .content {
-    color: #e6edf3;
-}
-
-:root[data-theme="dark"] .has-text-grey {
-    color: #9ea7b3 !important;
-}
-
-:root[data-theme="dark"] a {
-    color: #6cb2ff;
+:root[data-theme="dark"] .button.is-light:hover {
+    background-color: #30363d;
 }
