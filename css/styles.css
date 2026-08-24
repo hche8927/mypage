@@ -178,18 +178,18 @@ main {
 }
 
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
-#theme-toggle:focus:not(:focus-visible) {
+.theme-toggle:focus:not(:focus-visible) {
     background-color: transparent !important;
 }
-#theme-toggle:focus-visible {
+.theme-toggle:focus-visible {
     outline: 2px solid var(--link-color);
     outline-offset: -2px;
     border-radius: 4px;
 }
 
-/* Theme toggle icon inherits text color */
-#theme-toggle .icon,
-#theme-icon {
+/* Theme toggle icon inherits text color (both mobile & desktop toggles) */
+.theme-toggle .icon,
+.theme-icon {
     color: var(--icon-color);
 }
 
@@ -240,8 +240,8 @@ a {
     }
 
     .navbar {
-        margin: 0 auto;
-        max-width: min(900px, calc(100% - 2rem));
+        margin: 0;
+        max-width: none;
     }
 
     /* Dropdown menu exists only in the burger range, so its themed
@@ -263,6 +263,17 @@ a {
     .navbar-menu .navbar-item {
         color: var(--text-color) !important;
     }
+
+    /* Mobile layout: theme toggle lives next to the burger (in the
+       brand); desktop layout: it stays in the menu (navbar-end). */
+    .theme-toggle-mobile { display: flex; }
+    .theme-toggle-desktop { display: none; }
+}
+
+/* Desktop layout (>=1024px): toggle in the menu, none next to burger */
+@media screen and (min-width: 1024px) {
+    .theme-toggle-mobile { display: none; }
+    .theme-toggle-desktop { display: flex; }
 }
 
 

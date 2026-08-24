@@ -1,25 +1,25 @@
-// Dark mode toggle
+// Dark mode toggle (mobile toggle in brand + desktop toggle in menu)
 (function () {
-    const toggle = document.getElementById('theme-toggle');
-    const icon = document.getElementById('theme-icon');
+    const toggles = document.querySelectorAll('.theme-toggle');
+    const icons = document.querySelectorAll('.theme-icon');
 
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
         // Show the icon of the theme you'll switch TO (contrast circle icon works both ways)
-        if (icon) {
-            icon.className = 'fa-solid fa-circle-half-stroke';
+        icons.forEach(icon => {
+            icon.className = 'fa-solid fa-circle-half-stroke theme-icon';
             icon.style.transform = theme === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
-        }
+        });
     }
 
     // Sync icon with current theme (set inline in <head>)
     const current = document.documentElement.getAttribute('data-theme') || 'dark';
-    if (icon) {
+    icons.forEach(icon => {
         icon.style.transform = current === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
-    }
+    });
 
-    if (toggle) {
+    toggles.forEach(toggle => {
         toggle.addEventListener('click', (e) => {
             e.preventDefault();
             const next = (document.documentElement.getAttribute('data-theme') === 'dark')
@@ -27,5 +27,5 @@
                 : 'dark';
             applyTheme(next);
         });
-    }
+    });
 })();
