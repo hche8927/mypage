@@ -9,17 +9,20 @@
     --icon-color: #24292f;
     --hover-bg: rgba(0, 0, 0, 0.05);
     --active-bg: rgba(0, 0, 0, 0.1);
-    --pattern-color: #cccccc;
-    --chinese-font: 'ZCOOL QingKe HuangYou', cursive;
 
     color-scheme: light;
+}
+
+/* Circuit board pattern - light theme (dark copper traces on light bg) */
+:root {
+    --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%23b8c4cc' stroke-width='1.5' opacity='0.35'%3E%3Cpath d='M20 20h50v30h40V20h30'/%3E%3Cpath d='M180 20v60h-40v40'/%3E%3Cpath d='M100 100h60v50h-30'/%3E%3Cpath d='M40 80v40h40v60'/%3E%3Cpath d='M20 160v20h60'/%3E%3Cpath d='M140 180h40v-40'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3Ccircle cx='140' cy='20' r='3'/%3E%3Ccircle cx='180' cy='80' r='3'/%3E%3Ccircle cx='100' cy='100' r='3'/%3E%3Ccircle cx='160' cy='150' r='3'/%3E%3Ccircle cx='110' cy='170' r='3'/%3E%3Ccircle cx='40' cy='120' r='3'/%3E%3Ccircle cx='80' cy='180' r='3'/%3E%3Ccircle cx='20' cy='160' r='3'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* ===== Base Styles ===== */
 body,
 html {
     background-color: var(--bg-color);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='126' height='84' viewBox='0 0 126 84'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23cccccc' fill-opacity='0.4'%3E%3Cpath d='M126 83v1H0v-2h40V42H0v-2h40V0h2v40h40V0h2v40h40V0h2v83zm-2-1V42H84v40h40zM82 42H42v40h40V42zm-50-6a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm96 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm-42 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm30-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM20 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 24a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: var(--bg-pattern);
     font-family: 'Noto Sans', sans-serif;
     color: var(--text-color);
     margin: 0;
@@ -79,10 +82,18 @@ main {
 }
 
 .navbar-item strong {
-    font-family: var(--chinese-font), cursive;
+    font-family: 'ZCOOL QingKe HuangYou', cursive;
+    color: var(--text-color);
 }
 
-/* Navbar item hover/focus/active states — theme-aware */
+/* Force all navbar text to theme color in dark mode (Bulma defaults are too dark) */
+:root[data-theme="dark"] .navbar-item,
+:root[data-theme="dark"] .navbar-link,
+:root[data-theme="dark"] .navbar-item strong {
+    color: #e6edf3 !important;
+}
+
+/* Navbar item hover/focus/active states - theme-aware */
 .navbar-item:hover,
 .navbar-item:focus,
 .navbar-link:hover,
@@ -113,10 +124,6 @@ main {
 }
 
 /* ===== Typography ===== */
-.cn-text {
-    font-family: var(--chinese-font);
-}
-
 .title,
 .content {
     color: var(--text-color);
@@ -162,16 +169,13 @@ a {
     --text-muted: #9ea7b3;
     --link-color: #6cb2ff;
     --icon-color: #e6edf3;
-    /* Subtle light pattern dots on dark bg for contrast */
-    --pattern-color: #30363d;
     --hover-bg: rgba(255, 255, 255, 0.08);
     --active-bg: rgba(255, 255, 255, 0.14);
 
-    color-scheme: dark;
-}
+    /* Circuit board pattern - dark theme (subtle green traces like a real PCB) */
+    --bg-pattern: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cg fill='none' stroke='%231f6feb' stroke-width='1.5' opacity='0.18'%3E%3Cpath d='M20 20h50v30h40V20h30'/%3E%3Cpath d='M180 20v60h-40v40'/%3E%3Cpath d='M100 100h60v50h-30'/%3E%3Cpath d='M40 80v40h40v60'/%3E%3Cpath d='M20 160v20h60'/%3E%3Cpath d='M140 180h40v-40'/%3E%3Ccircle cx='20' cy='20' r='3'/%3E%3Ccircle cx='140' cy='20' r='3'/%3E%3Ccircle cx='180' cy='80' r='3'/%3E%3Ccircle cx='100' cy='100' r='3'/%3E%3Ccircle cx='160' cy='150' r='3'/%3E%3Ccircle cx='110' cy='170' r='3'/%3E%3Ccircle cx='40' cy='120' r='3'/%3E%3Ccircle cx='80' cy='180' r='3'/%3E%3Ccircle cx='20' cy='160' r='3'/%3E%3C/g%3E%3C/svg%3E");
 
-:root[data-theme="dark"] body {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='126' height='84' viewBox='0 0 126 84'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2330363d' fill-opacity='0.55'%3E%3Cpath d='M126 83v1H0v-2h40V42H0v-2h40V0h2v40h40V0h2v40h40V0h2v83zm-2-1V42H84v40h40zM82 42H42v40h40V42zm-50-6a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm96 12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm-42 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm30-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM20 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 24a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM8 78a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm12 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm54 0a4 4 0 1 1 0-8 4 4 0 0 1 0 8zM50 54a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm24-12a4 4 0 1 1 0-8 4 4 0 0 1 0 8z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    color-scheme: dark;
 }
 
 /* Bulma is-light buttons in dark mode */

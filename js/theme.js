@@ -6,15 +6,17 @@
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+        // Show the icon of the theme you'll switch TO (contrast circle icon works both ways)
         if (icon) {
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            icon.className = 'fa-solid fa-circle-half-stroke';
+            icon.style.transform = theme === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
         }
     }
 
     // Sync icon with current theme (set inline in <head>)
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
     if (icon) {
-        icon.className = current === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        icon.style.transform = current === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 
     if (toggle) {

@@ -34,8 +34,7 @@
         <script>
             // Apply saved theme before paint to avoid flash
             (function () {
-                const theme = localStorage.getItem('theme') ||
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                const theme = localStorage.getItem('theme') || 'dark';
                 document.documentElement.setAttribute('data-theme', theme);
             })();
         </script>
@@ -63,7 +62,7 @@
                     <a class="navbar-item" href="#" id="theme-toggle"
                         aria-label="Toggle dark mode">
                         <span class="icon">
-                            <i class="fas fa-moon" id="theme-icon"></i>
+                            <i class="fa-solid fa-circle-half-stroke" id="theme-icon"></i>
                         </span>
                     </a>
                 </div>
