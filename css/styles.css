@@ -192,6 +192,28 @@ main {
     color: var(--icon-color);
 }
 
+/* Dropdown menu + burger follow theme at ALL widths.
+   Bulma switches to the burger/dropdown layout below 1024px, but our
+   theme overrides were previously scoped to max-width:768px, so the
+   769–1023px range showed Bulma's default white menu + dark grey burger
+   in dark mode. Keep the mobile *positioning* in the media query below;
+   these color rules must apply wherever the burger layout is active. */
+.navbar-menu {
+    background: var(--paper-color);
+}
+
+.navbar-burger,
+.navbar-burger:hover,
+.navbar-burger:focus,
+.navbar-burger:active,
+.navbar-burger.is-active {
+    color: var(--text-color) !important;
+}
+
+.navbar-burger span {
+    background-color: currentColor;
+}
+
 /* ===== Typography ===== */
 .title,
 .content {
@@ -206,7 +228,9 @@ a {
     color: var(--link-color);
 }
 
-/* ===== Responsive Design ===== */
+/* ===== Responsive Design =====
+   Layout-only: the theme colors for the burger/dropdown are global above,
+   so they work across the whole 769–1023px desktop "tablet" range too. */
 @media screen and (max-width: 768px) {
     .paper-container {
         margin: 1rem;
@@ -222,7 +246,6 @@ a {
         width: calc(100% - 2rem);
         left: 1rem;
         margin-top: 0.5rem;
-        background: var(--paper-color);
         box-shadow: 0 4px 12px var(--shadow-color);
         border-radius: 8px;
         padding: 1rem;
@@ -231,22 +254,6 @@ a {
     /* Mobile menu text follows theme (Bulma defaults render grayish) */
     .navbar-menu .navbar-item {
         color: var(--text-color) !important;
-    }
-
-    /* Burger icon follows theme. Pin with !important in all states:
-       touch devices stick :hover on the tapped element, and Bulma's
-       a:hover (higher specificity) would otherwise pin the dark default
-       color until the next touch elsewhere or a reload. */
-    .navbar-burger,
-    .navbar-burger:hover,
-    .navbar-burger:focus,
-    .navbar-burger:active,
-    .navbar-burger.is-active {
-        color: var(--text-color) !important;
-    }
-
-    .navbar-burger span {
-        background-color: currentColor;
     }
 }
 
