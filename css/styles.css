@@ -210,9 +210,16 @@ a {
         color: var(--text-color) !important;
     }
 
-    /* Burger icon follows theme */
-    .navbar-burger {
-        color: var(--text-color);
+    /* Burger icon follows theme. Pin with !important in all states:
+       touch devices stick :hover on the tapped element, and Bulma's
+       a:hover (higher specificity) would otherwise pin the dark default
+       color until the next touch elsewhere or a reload. */
+    .navbar-burger,
+    .navbar-burger:hover,
+    .navbar-burger:focus,
+    .navbar-burger:active,
+    .navbar-burger.is-active {
+        color: var(--text-color) !important;
     }
 
     .navbar-burger span {
