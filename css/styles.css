@@ -192,16 +192,13 @@ main {
     color: var(--icon-color);
 }
 
-/* Dropdown menu + burger follow theme at ALL widths.
-   Bulma switches to the burger/dropdown layout below 1024px, but our
-   theme overrides were previously scoped to max-width:768px, so the
-   769–1023px range showed Bulma's default white menu + dark grey burger
-   in dark mode. Keep the mobile *positioning* in the media query below;
-   these color rules must apply wherever the burger layout is active. */
-.navbar-menu {
-    background: var(--paper-color);
-}
-
+/* Dropdown menu + burger theme colors.
+   The *menu background* only applies where the dropdown layout exists
+   (Bulma's burger range, below 1024px): on desktop the menu is laid out
+   inline inside the navbar, and its square-cornered background reaches
+   the navbar's right edge, squaring off the 8px bottom-right corner.
+   The burger color must stay global — the burger is visible anywhere
+   below 1024px, and touch sticky-hover keeps it in hover/active states. */
 .navbar-burger,
 .navbar-burger:hover,
 .navbar-burger:focus,
@@ -246,7 +243,10 @@ a {
         max-width: min(900px, calc(100% - 2rem));
     }
 
+    /* Dropdown menu exists only in the burger range, so its themed
+       background lives here, not globally (see comment above). */
     .navbar-menu {
+        background: var(--paper-color);
         position: absolute;
         width: calc(100% - 2rem);
         left: 1rem;
