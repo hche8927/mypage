@@ -253,7 +253,7 @@ a {
         position: absolute;
         width: 100%;
         left: 0;
-        margin-top: 0.5rem;
+        margin-top: 1rem;
         box-shadow: 0 4px 12px var(--shadow-color);
         border-radius: var(--radius);
         padding: 1rem;
