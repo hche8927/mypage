@@ -157,7 +157,22 @@ a {
         border-radius: 8px;
         padding: 1rem;
     }
+
+    /* Mobile menu text follows theme (Bulma defaults render grayish) */
+    .navbar-menu .navbar-item {
+        color: var(--text-color) !important;
+    }
+
+    /* Burger icon follows theme */
+    .navbar-burger {
+        color: var(--text-color);
+    }
+
+    .navbar-burger span {
+        background-color: currentColor;
+    }
 }
+
 
 /* ===== Dark Mode ===== */
 :root[data-theme="dark"] {
