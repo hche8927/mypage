@@ -236,12 +236,12 @@ a {
    Theme colors for the burger/dropdown are global above. */
 @media screen and (max-width: 1023px) {
     .paper-container {
-        margin: 1rem;
+        margin: 1rem auto;
         padding: 1rem;
     }
 
     .navbar {
-        margin: 0 1rem;
+        margin: 0 auto;
     }
 
     .navbar-menu {
