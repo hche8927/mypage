@@ -232,7 +232,7 @@ a {
     --icon-color: #e6edf3;
     --hover-bg: rgba(255, 255, 255, 0.08);
     --active-bg: rgba(255, 255, 255, 0.14);
-    --grain-opacity: 0.08;
+    --grain-opacity: 0.045;
     --grain-blend: screen;
 
     /* Circuit board pattern - dark theme (subtle green traces like a real PCB) */
