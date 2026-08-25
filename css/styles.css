@@ -263,16 +263,17 @@ a {
     /* Dropdown menu exists only in the burger range, so its themed
        background lives here, not globally (see comment above).
        Sits to the right: shrinks to content width (max-content) and
-       pins its right edge to the navbar's right edge; the items
-       inside stay left-aligned. Half the gap to the navbar (0.5rem). */
-    .navbar-menu {
-        background: var(--paper-color);
-        position: absolute;
-        width: max-content;
-        max-width: 100%;
-        right: 0;
-        left: auto;
-        margin-top: 0.5rem;
+       keeps an even gap from the navbar — 0.5rem top AND right, so the
+       menu floats with uniform clearance; items inside stay
+       left-aligned. */
+       .navbar-menu {
+       background: var(--paper-color);
+       position: absolute;
+       width: max-content;
+       max-width: calc(100% - 0.5rem);
+       right: 0.5rem;
+       left: auto;
+       margin-top: 0.5rem;
         box-shadow: 0 4px 12px var(--shadow-color);
         border-radius: var(--radius);
         padding: 1rem;
