@@ -177,13 +177,6 @@ main {
     border-radius: 4px;
 }
 
-/* Navbar sits flush against the first content card — no vertical gap
-   below it (its own margins are already 0; the visible gap was the
-   hero card's top margin). */
-#welcome {
-    margin-top: 0;
-}
-
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
 .theme-toggle:focus:not(:focus-visible) {
     background-color: transparent !important;
@@ -254,14 +247,13 @@ a {
     /* Dropdown menu exists only in the burger range, so its themed
        background lives here, not globally (see comment above).
        Edge-aligned with the navbar (left: 0 / 100%) so it matches the
-       container's width instead of floating 1rem inside it.
-       Flushed against the navbar (margin-top: 0). */
+       container's width instead of floating 1rem inside it. */
     .navbar-menu {
         background: var(--paper-color);
         position: absolute;
         width: 100%;
         left: 0;
-        margin-top: 0;
+        margin-top: 1rem;
         box-shadow: 0 4px 12px var(--shadow-color);
         border-radius: var(--radius);
         padding: 1rem;
