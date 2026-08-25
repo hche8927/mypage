@@ -17,12 +17,12 @@
     /* Liquid-glass cards: translucent paper + light frosted blur.
        --glass-edge: the "top light" rim, painted INSIDE the top border
        (inset highlight) so nothing protrudes outside the card.
-       --glass-bg-panel: more opaque variant for the floating dropdown,
-       which stacks over the navbar glass — glass-on-glass would
-       otherwise read as near-transparent. */
+       The mobile dropdown uses the SAME --glass-bg as the cards: it
+       floats over the raw background pattern (not over the navbar
+       glass — navbar bottom sits ~7px above the menu top), so it
+       needs no extra opacity. */
     --glass-blur: 10px;
     --glass-bg: rgba(253, 251, 247, 0.55);
-    --glass-bg-panel: rgba(253, 251, 247, 0.82);
     --glass-border: rgba(44, 40, 37, 0.20);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 
@@ -42,13 +42,14 @@
 html {
     background-color: var(--bg-color);
     background-image: var(--bg-pattern);
-    /* Tile at 2x so the frosted cards have large soft elements to blur
-       (a 10px blur on the native 16px dots just washes them out).
+    /* Tile larger than native so the frosted cards have soft elements
+       to blur (a 10px blur on the native 16px dots washes them out),
+       while staying dense enough that the pattern reads as texture.
        Canvas backgrounds scroll with the document by default; pin the
        pattern to the viewport so the frosted cards reveal a *stationary*
        backdrop as content scrolls past (the liquid-glass signature). */
     background-attachment: fixed;
-    background-size: 128px 128px;
+    background-size: 64px 64px;
 }
 
 body {
@@ -342,7 +343,7 @@ a {
        menu floats with uniform clearance; items inside stay
        left-aligned. */
        .navbar-menu {
-       background: var(--glass-bg-panel);
+       background: var(--glass-bg);
        -webkit-backdrop-filter: blur(var(--glass-blur));
        backdrop-filter: blur(var(--glass-blur));
        border: 1px solid var(--glass-border);
@@ -399,7 +400,6 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
-    --glass-bg-panel: rgba(22, 27, 34, 0.85);
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
