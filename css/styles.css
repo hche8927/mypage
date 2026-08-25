@@ -25,7 +25,7 @@
        grid) suppress that while keeping the menu its own tier. */
      --glass-blur: 10px;
      --glass-bg: rgba(253, 251, 247, 0.55);
-     --glass-bg-menu: rgba(253, 251, 247, 0.72);
+     --glass-bg-menu: rgba(253, 251, 247, 1);
      --glass-blur-menu: 20px;
     --glass-border: rgba(44, 40, 37, 0.20);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
@@ -404,7 +404,7 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
-    --glass-bg-menu: rgba(22, 27, 34, 0.70);
+    --glass-bg-menu: rgba(22, 27, 34, 1);
     --glass-blur-menu: 20px;
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
