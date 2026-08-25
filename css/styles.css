@@ -178,13 +178,6 @@ main {
     border-radius: 4px;
 }
 
-/* Gap between the navbar and the first content card is half the
-   normal card rhythm (0.5rem instead of 1rem) so the nav feels
-   attached to the content without fully touching it. */
-#welcome {
-    margin-top: 0.5rem;
-}
-
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
 .theme-toggle:focus:not(:focus-visible) {
     background-color: transparent !important;
