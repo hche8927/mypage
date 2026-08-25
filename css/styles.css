@@ -155,19 +155,16 @@ main {
     }
 }
 
-.navbar-item:focus,
-.navbar-link:focus {
-    color: var(--text-color) !important;
-}
-
 .navbar-item:active,
 .navbar-link:active {
     background-color: var(--active-bg) !important;
 }
 
-/* No lingering background after pointer clicks; keyboard gets a ring */
-.navbar-item:focus:not(:focus-visible),
-.navbar-link:focus:not(:focus-visible) {
+/* No lingering background after pointer clicks; keyboard gets a ring.
+   :not(:active) keeps the press feedback rule (above) from being
+   out-specified while the pointer is down. */
+.navbar-item:focus:not(:focus-visible):not(:active),
+.navbar-link:focus:not(:focus-visible):not(:active) {
     background-color: transparent !important;
 }
 
@@ -178,8 +175,16 @@ main {
     border-radius: 4px;
 }
 
+/* Kill the gray tap flash on touch devices (all interactive navbar
+   elements, including the dropdown links) */
+.navbar-item,
+.navbar-link,
+.navbar-burger {
+    -webkit-tap-highlight-color: transparent;
+}
+
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
-.theme-toggle:focus:not(:focus-visible) {
+.theme-toggle:focus:not(:focus-visible):not(:active) {
     background-color: transparent !important;
 }
 .theme-toggle:focus-visible {
@@ -214,14 +219,29 @@ main {
    (Bulma's burger range, below 1024px): on desktop the menu is laid out
    inline inside the navbar, and its square-cornered background reaches
    the navbar's right edge, squaring off the 8px bottom-right corner.
-   The burger color must stay global — the burger is visible anywhere
-   below 1024px, and touch sticky-hover keeps it in hover/active states. */
-.navbar-burger,
+
+   The burger must never show a hover/focus background: on touch devices
+   :hover sticks to the tapped element, pinning Bulma's rgba(0,0,0,.05)
+   block on the burger forever. Color is pinned to the theme text color -
+   Bulma's a:hover { color: #363636 } would otherwise darken the
+   stuck-hover icon to near-invisible in dark mode. Press feedback is
+   kept via :active only; it is transient (while the pointer is down),
+   so it can never stick. */
+.navbar-burger {
+    color: var(--text-color) !important;
+    background-color: transparent;
+}
+
 .navbar-burger:hover,
 .navbar-burger:focus,
-.navbar-burger:active,
 .navbar-burger.is-active {
+    background-color: transparent;
     color: var(--text-color) !important;
+}
+
+/* Press feedback: shown only while the pointer is down */
+.navbar-burger:active {
+    background-color: var(--active-bg);
 }
 
 .navbar-burger span {
