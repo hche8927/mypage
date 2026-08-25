@@ -15,32 +15,43 @@
     --radius: 12px;
 
     /* Liquid-glass cards: translucent paper + light frosted blur.
-       Opacity kept high (light-frost decision) so text contrast stays
-       solid while the circuit pattern still shows through, softened.
-       --glass-edge: the "top light" rim. Light theme paints it OUTSIDE
-       the top border (a white line on the cream bg); dark theme paints
-       it inside (inset highlight on the dark glass). */
+       --glass-edge: the "top light" rim, painted INSIDE the top border
+       (inset highlight) so nothing protrudes outside the card.
+       --glass-bg-panel: more opaque variant for the floating dropdown,
+       which stacks over the navbar glass — glass-on-glass would
+       otherwise read as near-transparent. */
     --glass-blur: 10px;
-    --glass-bg: rgba(253, 251, 247, 0.60);
+    --glass-bg: rgba(253, 251, 247, 0.55);
+    --glass-bg-panel: rgba(253, 251, 247, 0.82);
     --glass-border: rgba(44, 40, 37, 0.20);
-    --glass-edge: 0 -1px 0 rgba(255, 255, 255, 0.90);
+    --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 
     color-scheme: light;
 }
 
 /* Circuit board pattern - light theme (dark copper traces on light bg) */
 :root {
-    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%220.7%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
+    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 }
 
-/* ===== Base Styles ===== */
-body,
+/* ===== Base Styles =====
+   Background lives on <html> only: the html (canvas) background is
+   fixed to the viewport, while a body background would scroll with
+   the content. Keeping the circuit pattern on the canvas means the
+   frosted cards blur a stationary backdrop as you scroll. */
 html {
     background-color: var(--bg-color);
     background-image: var(--bg-pattern);
     /* Tile at 2x so the frosted cards have large soft elements to blur
-       (a 10px blur on the native 16px dots just washes them out). */
+       (a 10px blur on the native 16px dots just washes them out).
+       Canvas backgrounds scroll with the document by default; pin the
+       pattern to the viewport so the frosted cards reveal a *stationary*
+       backdrop as content scrolls past (the liquid-glass signature). */
+    background-attachment: fixed;
     background-size: 128px 128px;
+}
+
+body {
     font-family: 'Noto Sans', sans-serif;
     color: var(--text-color);
     margin: 0;
@@ -144,14 +155,17 @@ main {
     }
 }
 
-/* ===== Navigation (liquid glass) ===== */
+/* ===== Navigation (liquid glass) =====
+   No top border / top highlight: the navbar is flush against the
+   viewport top edge, where a bright rim reads as a stray white line
+   (jarring in dark). Keep the hairline on bottom/sides only. */
 .navbar {
     background: var(--glass-bg);
     -webkit-backdrop-filter: blur(var(--glass-blur));
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
-    box-shadow: 0 2px 8px var(--shadow-color),
-        var(--glass-edge);
+    border-top: none;
+    box-shadow: 0 2px 8px var(--shadow-color);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -328,7 +342,7 @@ a {
        menu floats with uniform clearance; items inside stay
        left-aligned. */
        .navbar-menu {
-       background: var(--glass-bg);
+       background: var(--glass-bg-panel);
        -webkit-backdrop-filter: blur(var(--glass-blur));
        backdrop-filter: blur(var(--glass-blur));
        border: 1px solid var(--glass-border);
@@ -385,6 +399,7 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
+    --glass-bg-panel: rgba(22, 27, 34, 0.85);
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
