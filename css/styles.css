@@ -193,10 +193,20 @@ main {
     border-radius: 4px;
 }
 
-/* Theme toggle icon inherits text color (both mobile & desktop toggles) */
-.theme-toggle .icon,
+/* Theme toggle icon (PNG, black + transparent — recolor via CSS filter).
+   Sized to match the former FA glyph (1.25rem). */
+.theme-toggle .icon {
+    display: flex;
+    align-items: center;
+}
 .theme-icon {
-    color: var(--icon-color);
+    width: 1.25rem;
+    height: 1.25rem;
+    display: block;
+}
+/* The artwork is black; invert it to light on the dark theme. */
+:root[data-theme="dark"] .theme-icon {
+    filter: invert(1);
 }
 
 /* Vertical divider between the burger/menu and the theme toggle.

@@ -6,9 +6,9 @@
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
-        // Show the icon of the theme you'll switch TO (contrast circle icon works both ways)
+        // Rotate the contrast icon: the solid half shows the theme you'll switch TO.
+        // (Icon color adapts automatically via CSS filter on [data-theme=dark].)
         icons.forEach(icon => {
-            icon.className = 'fa-solid fa-circle-half-stroke theme-icon';
             icon.style.transform = theme === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
         });
     }
