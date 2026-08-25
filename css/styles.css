@@ -17,12 +17,16 @@
     /* Liquid-glass cards: translucent paper + light frosted blur.
        --glass-edge: the "top light" rim, painted INSIDE the top border
        (inset highlight) so nothing protrudes outside the card.
-       The mobile dropdown uses the SAME --glass-bg as the cards: it
-       floats over the raw background pattern (not over the navbar
-       glass — navbar bottom sits ~7px above the menu top), so it
-       needs no extra opacity. */
-    --glass-blur: 10px;
-    --glass-bg: rgba(253, 251, 247, 0.55);
+       The mobile dropdown is intentionally HEAVIER glass than the
+       cards: when it overlaps a card, the card's high-contrast text
+       would read through the card-grade glass as ghost outlines.
+       --glass-bg-menu / --glass-blur-menu (measured, 2026-08: ghost
+       edge 46.9% -> 38.4%, best of a blur 10-24 x alpha 0.52-0.75
+       grid) suppress that while keeping the menu its own tier. */
+     --glass-blur: 10px;
+     --glass-bg: rgba(253, 251, 247, 0.55);
+     --glass-bg-menu: rgba(253, 251, 247, 0.72);
+     --glass-blur-menu: 20px;
     --glass-border: rgba(44, 40, 37, 0.20);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 
@@ -343,9 +347,9 @@ a {
        menu floats with uniform clearance; items inside stay
        left-aligned. */
        .navbar-menu {
-       background: var(--glass-bg);
-       -webkit-backdrop-filter: blur(var(--glass-blur));
-       backdrop-filter: blur(var(--glass-blur));
+       background: var(--glass-bg-menu);
+       -webkit-backdrop-filter: blur(var(--glass-blur-menu));
+       backdrop-filter: blur(var(--glass-blur-menu));
        border: 1px solid var(--glass-border);
        position: absolute;
        width: max-content;
@@ -400,6 +404,8 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
+    --glass-bg-menu: rgba(22, 27, 34, 0.70);
+    --glass-blur-menu: 20px;
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
