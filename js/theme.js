@@ -14,7 +14,7 @@
     }
 
     // Sync icon with current theme (set inline in <head>)
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
     icons.forEach(icon => {
         icon.style.transform = current === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
     });
