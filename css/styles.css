@@ -11,6 +11,7 @@
     --active-bg: rgba(44, 40, 37, 0.10);
     --grain-opacity: 0.10;
     --grain-blend: normal;
+    --divider-color: rgba(44, 40, 37, 0.18);
     --radius: 12px;
 
     color-scheme: light;
@@ -177,6 +178,13 @@ main {
     border-radius: 4px;
 }
 
+/* Gap between the navbar and the first content card is half the
+   normal card rhythm (0.5rem instead of 1rem) so the nav feels
+   attached to the content without fully touching it. */
+#welcome {
+    margin-top: 0.5rem;
+}
+
 /* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
 .theme-toggle:focus:not(:focus-visible) {
     background-color: transparent !important;
@@ -191,6 +199,21 @@ main {
 .theme-toggle .icon,
 .theme-icon {
     color: var(--icon-color);
+}
+
+/* Vertical divider between the burger/menu and the theme toggle.
+   One element per layout: .nav-divider-mobile lives in the brand
+   (burger | divider | toggle), .nav-divider-desktop in the menu
+   (About | divider | toggle). Only the matching one is visible. */
+.nav-divider {
+    width: 1px;
+    height: 1.5rem;
+    align-self: center;
+    flex-shrink: 0;
+    background: var(--divider-color);
+}
+.nav-divider-mobile {
+    display: none;
 }
 
 /* Dropdown menu + burger theme colors.
@@ -246,17 +269,21 @@ a {
 
     /* Dropdown menu exists only in the burger range, so its themed
        background lives here, not globally (see comment above).
-       Edge-aligned with the navbar (left: 0 / 100%) so it matches the
-       container's width instead of floating 1rem inside it. */
+       Sits to the right: shrinks to content width (max-content) and
+       pins its right edge to the navbar's right edge; the items
+       inside stay left-aligned. Half the gap to the navbar (0.5rem). */
     .navbar-menu {
         background: var(--paper-color);
         position: absolute;
-        width: 100%;
-        left: 0;
-        margin-top: 1rem;
+        width: max-content;
+        max-width: 100%;
+        right: 0;
+        left: auto;
+        margin-top: 0.5rem;
         box-shadow: 0 4px 12px var(--shadow-color);
         border-radius: var(--radius);
         padding: 1rem;
+        text-align: left;
     }
 
     /* Mobile menu text follows theme (Bulma defaults render grayish) */
@@ -264,16 +291,22 @@ a {
         color: var(--text-color) !important;
     }
 
-    /* Mobile layout: theme toggle lives next to the burger (in the
-       brand); desktop layout: it stays in the menu (navbar-end). */
+    /* Mobile layout: theme toggle lives to the RIGHT of the burger
+       (brand), separated by a vertical divider; desktop layout: it
+       stays in the menu (navbar-end) with its own divider. */
     .theme-toggle-mobile { display: flex; }
     .theme-toggle-desktop { display: none; }
+    .nav-divider-mobile { display: block; }
+    .nav-divider-desktop { display: none; }
 }
 
-/* Desktop layout (>=1024px): toggle in the menu, none next to burger */
+/* Desktop layout (>=1024px): toggle in the menu (right of a divider),
+   none next to burger */
 @media screen and (min-width: 1024px) {
     .theme-toggle-mobile { display: none; }
     .theme-toggle-desktop { display: flex; }
+    .nav-divider-mobile { display: none; }
+    .nav-divider-desktop { display: block; }
 }
 
 
@@ -290,6 +323,7 @@ a {
     --active-bg: rgba(255, 255, 255, 0.14);
     --grain-opacity: 0.045;
     --grain-blend: screen;
+    --divider-color: rgba(255, 255, 255, 0.22);
 
     /* Circuit board pattern - dark theme (subtle green traces like a real PCB) */
     --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23e6edf3%22 fill-opacity=%220.07%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
