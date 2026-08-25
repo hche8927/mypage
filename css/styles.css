@@ -85,7 +85,7 @@ main {
    via the ::after overlay below. */
 .paper-container {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 12px var(--shadow-color),
@@ -100,7 +100,7 @@ main {
 
 .paper-card {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
@@ -166,7 +166,7 @@ main {
    (jarring in dark). Keep the hairline on bottom/sides only. */
 .navbar {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-top: none;
@@ -348,7 +348,7 @@ a {
        left-aligned. */
        .navbar-menu {
        background: var(--glass-bg-menu);
-       -webkit-backdrop-filter: blur(var(--glass-blur-menu));
+       -webkit-backdrop-filter: blur(20px);
        backdrop-filter: blur(var(--glass-blur-menu));
        border: 1px solid var(--glass-border);
        position: absolute;
