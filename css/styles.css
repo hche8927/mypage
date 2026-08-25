@@ -85,7 +85,6 @@ main {
    via the ::after overlay below. */
 .paper-container {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 12px var(--shadow-color),
@@ -100,7 +99,6 @@ main {
 
 .paper-card {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-radius: var(--radius);
@@ -166,7 +164,6 @@ main {
    (jarring in dark). Keep the hairline on bottom/sides only. */
 .navbar {
     background: var(--glass-bg);
-    -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(var(--glass-blur));
     border: 1px solid var(--glass-border);
     border-top: none;
@@ -348,7 +345,6 @@ a {
        left-aligned. */
        .navbar-menu {
        background: var(--glass-bg-menu);
-       -webkit-backdrop-filter: blur(20px);
        backdrop-filter: blur(var(--glass-blur-menu));
        border: 1px solid var(--glass-border);
        position: absolute;
@@ -424,4 +420,24 @@ a {
 
 :root[data-theme="dark"] .button.is-light:hover {
     background-color: #30363d;
+}
+
+/* -webkit- prefix for older iOS/Safari (pre-18), gathered here so
+   engines that reject the alias (e.g. Firefox devtools) skip the whole
+   block instead of flagging every inline declaration. Safari's
+   prefixed path does not resolve var(), hence literal values.
+   Mirrors the standard backdrop-filter declarations above, including
+   the mobile-only scoping of .navbar-menu. */
+@supports (-webkit-backdrop-filter: blur(1px)) {
+    .paper-container,
+    .paper-card,
+    .navbar {
+        -webkit-backdrop-filter: blur(10px);
+    }
+
+    @media screen and (max-width: 1023px) {
+        .navbar-menu {
+            -webkit-backdrop-filter: blur(20px);
+        }
+    }
 }
