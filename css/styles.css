@@ -114,6 +114,27 @@ main {
     transform: translateY(-2px);
 }
 
+/* ===== Social links (hero) ===== */
+.social-links {
+    margin-top: 1.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.75rem;
+}
+.social-links a {
+    color: var(--text-color);
+    font-size: 1.6rem;
+    line-height: 1;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.social-links a:hover,
+.social-links a:focus {
+    opacity: 0.55;
+    transform: translateY(-2px);
+    outline: none;
+}
+
 /* ===== Paper grain texture =====
    Grain surface for all "paper card" components (navbar, hero, about, ...).
    Technique ref: NudaUI grain-paper — desaturated feTurbulence tile.
