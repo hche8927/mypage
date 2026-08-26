@@ -128,6 +128,14 @@ main {
     line-height: 1;
     transition: opacity 0.18s ease, transform 0.18s ease;
 }
+.social-links img {
+    display: block;
+}
+/* Official IMDb mark: white wordmark cut to transparent, so the dark
+   theme inverts the whole icon to a light-on-dark chip */
+:root[data-theme="dark"] .social-links img {
+    filter: invert(1);
+}
 .social-links a:hover,
 .social-links a:focus {
     opacity: 0.55;
