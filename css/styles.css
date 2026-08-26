@@ -1,7 +1,7 @@
 /* ===== Theme tokens ===== */
 :root {
     --paper-color: #FDFBF7;
-    --menu-color: #F6F0E1;
+    --menu-color: rgba(253, 251, 247, 0.95);
     --shadow-color: rgba(44, 40, 37, 0.10);
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
@@ -198,6 +198,24 @@ main {
 .navbar-item,
 .navbar-link {
     background-color: transparent !important;
+    /* Bulma's global `a { color: #485fc7 }` would otherwise pin the About
+       link blue in light theme (dark was covered by the forced rule
+       above). .navbar-item outranks bare `a`, so plain specificity wins. */
+    color: var(--text-color);
+}
+
+/* Bulma's `a:hover { color: #485fc7 }` (0-1-1) outranks the rule above
+   (0-1-0), and on touch devices :hover sticks after a tap - that was the
+   "residual blue" in light theme. Kept OUTSIDE the (hover: hover) query
+   on purpose: it must apply exactly where that query does NOT match.
+   Dark theme is unaffected (its forced color already wins via !important). */
+.navbar-item:hover,
+.navbar-link:hover,
+.navbar-item:active,
+.navbar-link:active,
+.navbar-item:focus,
+.navbar-link:focus {
+    color: var(--text-color) !important;
 }
 
 /* Navbar item hover/focus/active states - theme-aware.
