@@ -17,16 +17,16 @@
     /* Liquid-glass cards: translucent paper + light frosted blur.
        --glass-edge: the "top light" rim, painted INSIDE the top border
        (inset highlight) so nothing protrudes outside the card.
-       The mobile dropdown is intentionally HEAVIER glass than the
-       cards: when it overlaps a card, the card's high-contrast text
-       would read through the card-grade glass as ghost outlines.
-       --glass-bg-menu / --glass-blur-menu (measured, 2026-08: ghost
-       edge 46.9% -> 38.4%, best of a blur 10-24 x alpha 0.52-0.75
-       grid) suppress that while keeping the menu its own tier. */
+       The mobile dropdown is NOT glass: it is a solid raised card in
+       the same material as the paper surfaces (--paper-color).
+       backdrop-filter on the menu was dead by spec (CSS Filter
+       Effects 2: .navbar's own backdrop-filter makes it a backdrop
+       root, so a descendant blur can only sample the navbar's flat
+       semi-opaque fill — an identity transform). Solid raised cards
+       are the standard pattern for nav dropdowns anyway, keep the
+       circuit pattern visible, and render identically everywhere. */
      --glass-blur: 10px;
      --glass-bg: rgba(253, 251, 247, 0.55);
-     --glass-bg-menu: rgba(253, 251, 247, 0.72);
-     --glass-blur-menu: 20px;
     --glass-border: rgba(44, 40, 37, 0.20);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 
@@ -339,13 +339,14 @@ a {
 
     /* Dropdown menu exists only in the burger range, so its themed
        background lives here, not globally (see comment above).
-       Sits to the right: shrinks to content width (max-content) and
-       keeps an even gap from the navbar — 0.5rem top AND right, so the
-       menu floats with uniform clearance; items inside stay
+       Solid raised card: same material as the paper containers, so
+       it reads as a raised sheet of the page rather than a glass
+       pane. Sits to the right: shrinks to content width (max-content)
+       and keeps an even gap from the navbar — 0.5rem top AND right, so
+       the menu floats with uniform clearance; items inside stay
        left-aligned. */
        .navbar-menu {
-       background: var(--glass-bg-menu);
-       backdrop-filter: blur(var(--glass-blur-menu));
+       background: var(--paper-color);
        border: 1px solid var(--glass-border);
        position: absolute;
        width: max-content;
@@ -400,8 +401,6 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
-    --glass-bg-menu: rgba(22, 27, 34, 0.70);
-    --glass-blur-menu: 20px;
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
@@ -425,19 +424,11 @@ a {
 /* -webkit- prefix for older iOS/Safari (pre-18), gathered here so
    engines that reject the alias (e.g. Firefox devtools) skip the whole
    block instead of flagging every inline declaration. Safari's
-   prefixed path does not resolve var(), hence literal values.
-   Mirrors the standard backdrop-filter declarations above, including
-   the mobile-only scoping of .navbar-menu. */
+   prefixed path does not resolve var(), hence literal values. */
 @supports (-webkit-backdrop-filter: blur(1px)) {
     .paper-container,
     .paper-card,
     .navbar {
         -webkit-backdrop-filter: blur(10px);
-    }
-
-    @media screen and (max-width: 1023px) {
-        .navbar-menu {
-            -webkit-backdrop-filter: blur(20px);
-        }
     }
 }
