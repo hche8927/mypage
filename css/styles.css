@@ -136,11 +136,30 @@ main {
 :root[data-theme="dark"] .social-links img {
     filter: invert(1);
 }
-.social-links a:hover,
-.social-links a:focus {
+/* Press feedback while the pointer/finger is down. */
+.social-links a:active {
     opacity: 0.55;
     transform: translateY(-2px);
+}
+/* Mouse hover only: touch browsers stick :hover on the tapped element,
+   which would pin the dimmed/lifted state until the next tap. */
+@media (hover: hover) {
+    .social-links a:hover {
+        opacity: 0.55;
+        transform: translateY(-2px);
+    }
+}
+/* After a mouse/touch click the link keeps :focus (and :hover on touch);
+   reset the visual state so nothing sticks. Keyboard keeps a ring. */
+.social-links a:focus:not(:focus-visible):not(:active) {
+    opacity: 1;
+    transform: none;
     outline: none;
+}
+.social-links a:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 3px;
+    border-radius: 4px;
 }
 
 /* ===== Paper grain texture =====
