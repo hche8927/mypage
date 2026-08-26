@@ -45,4 +45,18 @@ document.addEventListener('DOMContentLoaded', () => {
             burger.focus();
         }
     });
+
+    // iOS Safari sticks :active/:focus on the tapped element until the
+    // next tap anywhere, so navbar buttons (burger / About / theme
+    // toggle) look "held down" until you tap elsewhere. Blurring the
+    // tapped element right after the tap releases both states while
+    // real press feedback (pointer down -> up) still works.
+    document.addEventListener('touchend', (e) => {
+        const el = e.target.closest('.navbar-item, .navbar-link, .navbar-burger');
+        if (!el) return;
+        setTimeout(() => {
+            const ae = document.activeElement;
+            if (ae && (ae === el || el.contains(ae))) ae.blur();
+        }, 0);
+    }, { passive: true });
 });
