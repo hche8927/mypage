@@ -1,13 +1,11 @@
 /* ===== Theme tokens ===== */
 :root {
-    --paper-color: #FDFBF7;
     --menu-color: rgba(248, 245, 238, 0.99);
     --shadow-color: rgba(44, 40, 37, 0.10);
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
     --text-muted: #6B6560;
     --link-color: #A65D3F;
-    --icon-color: #2C2825;
     --hover-bg: rgba(44, 40, 37, 0.05);
     --active-bg: rgba(44, 40, 37, 0.10);
     --grain-opacity: 0.10;
@@ -19,15 +17,15 @@
        --glass-edge: the "top light" rim, painted INSIDE the top border
        (inset highlight) so nothing protrudes outside the card.
        The mobile dropdown is NOT glass: it is a solid raised card in
-       the same material as the paper surfaces (--paper-color).
+       the same material as the page background (--bg-color).
        backdrop-filter on the menu was dead by spec (CSS Filter
        Effects 2: .navbar's own backdrop-filter makes it a backdrop
        root, so a descendant blur can only sample the navbar's flat
        semi-opaque fill — an identity transform). Solid raised cards
        are the standard pattern for nav dropdowns anyway, keep the
        circuit pattern visible, and render identically everywhere. */
-     --glass-blur: 10px;
-     --glass-bg: rgba(253, 251, 247, 0.55);
+    --glass-blur: 10px;
+    --glass-bg: rgba(253, 251, 247, 0.55);
     --glass-border: rgba(44, 40, 37, 0.20);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
 
@@ -465,13 +463,11 @@ a {
 
 /* ===== Dark Mode ===== */
 :root[data-theme="dark"] {
-    --paper-color: #161b22;
     --shadow-color: rgba(0, 0, 0, 0.6);
     --bg-color: #0d1117;
     --text-color: #e6edf3;
     --text-muted: #9ea7b3;
     --link-color: #6cb2ff;
-    --icon-color: #e6edf3;
     --hover-bg: rgba(255, 255, 255, 0.08);
     --active-bg: rgba(255, 255, 255, 0.14);
     --grain-opacity: 0.045;
@@ -487,17 +483,6 @@ a {
     --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23e6edf3%22 fill-opacity=%220.28%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 
     color-scheme: dark;
-}
-
-/* Bulma is-light buttons in dark mode */
-:root[data-theme="dark"] .button.is-light {
-    background-color: #21262d;
-    color: #e6edf3;
-    border-color: #30363d;
-}
-
-:root[data-theme="dark"] .button.is-light:hover {
-    background-color: #30363d;
 }
 
 /* -webkit- prefix for older iOS/Safari (pre-18), gathered here so
