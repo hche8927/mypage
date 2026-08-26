@@ -1,7 +1,7 @@
 /* ===== Theme tokens ===== */
 :root {
     --paper-color: #FDFBF7;
-    --menu-color: rgba(248, 245, 238, 0.98);
+    --menu-color: rgba(248, 245, 238, 0.99);
     --shadow-color: rgba(44, 40, 37, 0.10);
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
@@ -431,7 +431,7 @@ a {
     --divider-color: rgba(255, 255, 255, 0.22);
     /* Dark glass: frosted dark tint + white hairline, inner top light. */
     --glass-bg: rgba(22, 27, 34, 0.52);
-    --menu-color: #161b22;
+    --menu-color: rgba(22, 27, 34, 0.99);
     --glass-border: rgba(255, 255, 255, 0.16);
     --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 
