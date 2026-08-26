@@ -1,7 +1,7 @@
 /* ===== Theme tokens ===== */
 :root {
     --paper-color: #FDFBF7;
-    --menu-color: rgba(253, 251, 247, 0.95);
+    --menu-color: rgba(244, 240, 231, 0.99);
     --shadow-color: rgba(44, 40, 37, 0.10);
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
