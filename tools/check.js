@@ -52,6 +52,13 @@ for (const [tag] of html.matchAll(/<img\b[^>]*>/g)) {
 const h1Count = (html.match(/<h1\b/g) || []).length;
 if (h1Count !== 1) fail(`index.html: expected exactly one <h1>, found ${h1Count}`);
 
+// Every element id that a script looks up must exist in the page
+for (const file of scripts.filter((f) => f.startsWith('js/'))) {
+    for (const [, id] of read(file).matchAll(/getElementById\('([^']+)'\)/g)) {
+        if (!new RegExp(`\\bid="${id}"`).test(html)) fail(`${file}: getElementById('${id}') but index.html has no id="${id}"`);
+    }
+}
+
 if (!/<html[^>]*\blang="/.test(html)) fail('index.html: <html> has no lang attribute');
 if (!/<!-- qr:start[\s\S]*<svg[\s\S]*<!-- qr:end -->/.test(html)) {
     fail('index.html: generated QR block missing (run `npm run qr`)');

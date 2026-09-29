@@ -4,6 +4,18 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+### Added
+- **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket: a rainbow foil, glitter and a soft glare slide across the card as the pointer or the device moves; the text, links, QR stamp and toggle float at different depths; the background pattern drifts the other way; the card leans toward the pointer. It drifts on its own when nothing is moving. Driven by the new `js/holo.js`; nothing moves with `prefers-reduced-motion`.
+- On iPhones and iPads the first tap asks permission to read the motion sensors (needed for the tilt effect).
+- `npm run check` now also verifies that every element id the scripts look up exists in the page.
+
+### Changed
+- **The page is dark by default** (was light). A saved choice still wins.
+- The background pattern is a fixed layer of its own instead of the `html` background, so it can drift without repainting.
+
+### Removed
+- The QR code is no longer a link; it is only for scanning.
+
 ## [3.0.0] - 2026-09-29
 
 A major release: a codebase-wide refactor plus the project's first licence. The page looks and behaves the same for visitors, but the file layout moved (for example `imdb.svg` is now `assets/imdb.svg`, and the Font Awesome and QR libraries are no longer loaded), so anything that linked to those files or copied the old structure needs updating.

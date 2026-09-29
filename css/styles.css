@@ -1,56 +1,29 @@
 /*
  * haodong.page - stylesheet
  *
- *   1. Design tokens (light / dark)
+ *   1. Design tokens (dark by default, light override)
  *   2. Base
  *   3. Stage and card scene (physical sizing, orientation)
  *   4. Card body (tilt, turn) and paper face
  *   5. Content: text, QR stamp, links
- *   6. Layouts: landscape, portrait
- *   7. Theme toggle
- *   8. Reduced motion
+ *   6. Holographic foil and parallax
+ *   7. Layouts: landscape, portrait
+ *   8. Theme toggle
+ *   9. Reduced motion
  *
  * The card is sized in millimetres: inside .card-scene, 1em = 1mm * --scale
  * and every card dimension is written in em, so the whole card scales as one
- * piece. js/card.js chooses --scale and data-orient (see docs/ARCHITECTURE.md).
+ * piece. js/card.js chooses --scale and data-orient; js/holo.js drives the
+ * live --px / --py / --holo values (see docs/ARCHITECTURE.md).
  */
 
 /* ==========================================================================
    1. Design tokens
    ========================================================================== */
 
+/* Dark is the default: it is what the page looks like with no saved choice
+   and with JavaScript off. The light theme overrides it below. */
 :root {
-    --bg-color: #F5EFE4;
-    --text-color: #2C2825;
-    --text-muted: #6B6560;
-    --link-color: #A65D3F;
-    --hover-bg: rgba(44, 40, 37, 0.05);
-    --active-bg: rgba(44, 40, 37, 0.10);
-    --grain-opacity: 0.10;
-    --grain-blend: normal;
-
-    /* Card paper: translucent tint, faint sheen, lit rim, soft shadow.
-       No backdrop blur: Firefox drops it on 3D-transformed elements and
-       glitches while they turn, so the tint alone carries the look and it is
-       identical in every browser. */
-    --card-bg: rgba(252, 249, 242, 0.86);
-    --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%,
-        rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 65%);
-    --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.35),
-        inset 0 -1px 0 rgba(44, 40, 37, 0.04);
-    --card-edge: rgba(44, 40, 37, 0.14);
-    --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
-        0 10px 24px rgba(44, 40, 37, 0.16);
-
-    /* Background tile: "Tic Tac Toe" from Hero Patterns (https://heropatterns.com/,
-       by Steve Schoger, CC BY 4.0), recoloured. It is a data URI, so it can't
-       use a theme variable: the two themes differ only in its fill colour. */
-    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
-
-    color-scheme: light;
-}
-
-:root[data-theme="dark"] {
     --bg-color: #0d1117;
     --text-color: #e6edf3;
     --text-muted: #9ea7b3;
@@ -60,6 +33,10 @@
     --grain-opacity: 0.045;
     --grain-blend: screen;
 
+    /* Card paper: translucent tint, faint sheen, lit rim, soft shadow.
+       No backdrop blur: Firefox drops it on 3D-transformed elements and
+       glitches while they turn, so the tint alone carries the look and it is
+       identical in every browser. */
     --card-bg: rgba(22, 27, 34, 0.85);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%,
         rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 65%);
@@ -69,9 +46,61 @@
     --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.6),
         0 12px 28px rgba(0, 0, 0, 0.55);
 
+    /* Holographic foil (section 6): strength and blend mode per layer */
+    --holo-foil-opacity: 0.13;
+    --holo-foil-blend: screen;
+    --holo-glare-opacity: 0.45;
+    --holo-glare-blend: overlay;
+    --holo-sparkle-opacity: 0.6;
+    --holo-sparkle-blend: screen;
+
+    /* Background tile: "Tic Tac Toe" from Hero Patterns (https://heropatterns.com/,
+       by Steve Schoger, CC BY 4.0), recoloured. It is a data URI, so it can't
+       use a theme variable: the two themes differ only in its fill colour. */
     --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23e6edf3%22 fill-opacity=%220.28%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 
+    /* Live values written by js/holo.js on <html>; these are the resting values.
+       --px/--py: where the "light" is, -1..1 (0 = centre); --mx/--my: the same
+       as 0..1; --holo: how strongly the foil shows, 0..1. */
+    --px: 0;
+    --py: 0;
+    --mx: 0.5;
+    --my: 0.5;
+    --holo: 0.35;
+
     color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+    --bg-color: #F5EFE4;
+    --text-color: #2C2825;
+    --text-muted: #6B6560;
+    --link-color: #A65D3F;
+    --hover-bg: rgba(44, 40, 37, 0.05);
+    --active-bg: rgba(44, 40, 37, 0.10);
+    --grain-opacity: 0.10;
+    --grain-blend: normal;
+
+    --card-bg: rgba(252, 249, 242, 0.86);
+    --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%,
+        rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 65%);
+    --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.35),
+        inset 0 -1px 0 rgba(44, 40, 37, 0.04);
+    --card-edge: rgba(44, 40, 37, 0.14);
+    --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
+        0 10px 24px rgba(44, 40, 37, 0.16);
+
+    /* Light paper needs different blend modes for the foil to show at all */
+    --holo-foil-opacity: 0.11;
+    --holo-foil-blend: multiply;
+    --holo-glare-opacity: 0.6;
+    --holo-glare-blend: overlay;
+    --holo-sparkle-opacity: 0.4;
+    --holo-sparkle-blend: overlay;
+
+    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
+
+    color-scheme: light;
 }
 
 /* ==========================================================================
@@ -84,9 +113,21 @@
 
 html {
     background-color: var(--bg-color);
+}
+
+/* The background pattern is a fixed layer of its own (not the html background)
+   so it can drift against the card: a cheap transform, no repaint. It is
+   oversized so the drift never shows an edge. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: -48px;
+    z-index: -1;
+    pointer-events: none;
     background-image: var(--bg-pattern);
-    background-attachment: fixed;
     background-size: 64px 64px;
+    transform: translate(calc(var(--px) * -14px), calc(var(--py) * -14px));
+    will-change: transform;
 }
 
 body {
@@ -152,8 +193,24 @@ a {
    ========================================================================== */
 
 /*
- * .card is what tilts (on press) and turns (easter egg). JS sets --rx, --ry
- * and --ps while a press is held; the turn itself is a Web Animation.
+ * Two nested movers, kept apart so they never fight:
+ *  - .card-tilt leans toward the pointer / device tilt (js/holo.js drives
+ *    --tilt-x / --tilt-y every frame, so it has no CSS transition);
+ *  - .card dips when pressed and turns over (js/card.js).
+ * Each has its own perspective, because a 3D transform on a child is only
+ * drawn with perspective by the nearest ancestor that has one.
+ */
+.card-tilt {
+    width: 100%;
+    height: 100%;
+    perspective: 240em;
+    transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg));
+    will-change: transform;
+}
+
+/*
+ * .card is what presses and turns. JS sets --rx, --ry and --ps while a press
+ * is held; the turn itself is a Web Animation.
  */
 .card {
     position: relative;
@@ -199,7 +256,7 @@ a {
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     overflow: hidden;
-    isolation: isolate;
+    isolation: isolate; /* also keeps the blend modes below inside the card, and rounds the clip in Safari */
     transition: background-color 0.25s ease, color 0.25s ease;
 }
 
@@ -251,7 +308,8 @@ a {
    perforation holes centred on its edges, plus two offset copies as shadow).
    It is vector so the perforations are pixel-identical in every browser; CSS
    gradient tiles were rounded differently by iOS Safari and left a stray strip
-   of paper. --qr is the QR size in em; the stamp adds 1em of paper per side. */
+   of paper. --qr is the QR size in em; the stamp adds 1em of paper per side.
+   The QR itself is not a link: it exists to be scanned from another screen. */
 
 .qr {
     position: relative;
@@ -326,7 +384,8 @@ a {
 
 .social-links img { width: 1em; }
 
-:root[data-theme="dark"] .social-links img { filter: invert(1); } /* the IMDb mark is black */
+/* The IMDb mark is black: invert it on dark paper (dark is the default) */
+:root:not([data-theme="light"]) .social-links img { filter: invert(1); }
 
 /* Press feedback (transient, so it can never stick on touch screens) */
 .social-links a:active { opacity: 0.55; }
@@ -358,7 +417,92 @@ a {
 }
 
 /* ==========================================================================
-   6. Layouts
+   6. Holographic foil and parallax
+   ========================================================================== */
+
+/*
+ * Three decorative layers sit on top of the card content, each blended into it
+ * (the face is an isolated stacking context, so nothing leaks outside):
+ *   - foil:    rainbow bands with fine diffraction lines, sliding as you tilt;
+ *   - sparkle: glitter dots, sliding twice as fast for a sense of depth;
+ *   - glare:   a soft white highlight that follows the "light".
+ * Each is an oversized box moved with a transform (compositor only, no
+ * repaint) by --px / --py, which js/holo.js updates from the pointer, the
+ * device tilt or an idle drift. --holo scales how strong they are.
+ * They never block clicks (pointer-events: none) and are hidden from assistive
+ * technology.
+ */
+.holo {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.holo > span {
+    position: absolute;
+    will-change: transform;
+}
+
+.holo-foil {
+    inset: -50%;
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.30) 0 0.12em, transparent 0.12em 0.36em),
+        repeating-linear-gradient(115deg,
+            hsl(350 100% 62%) 0%, hsl(40 100% 62%) 3.7%, hsl(100 100% 60%) 7.3%,
+            hsl(170 100% 58%) 11%, hsl(220 100% 66%) 14.7%, hsl(290 100% 66%) 18.3%,
+            hsl(350 100% 62%) 22%);
+    background-blend-mode: soft-light, normal; /* the fine lines darken the rainbow */
+    mix-blend-mode: var(--holo-foil-blend);
+    opacity: calc(var(--holo-foil-opacity) * (0.45 + var(--holo) * 0.85));
+    transform: translate(calc(var(--px) * -14%), calc(var(--py) * -14%));
+}
+
+.holo-sparkle {
+    inset: -50%;
+    /* Five sparse layers with unrelated tile sizes, so the dots never line up
+       into a visible grid. */
+    background:
+        radial-gradient(circle at 12% 18%, hsl(60 100% 92%) 0 0.14em, transparent 0.42em),
+        radial-gradient(circle at 68% 42%, hsl(190 100% 94%) 0 0.12em, transparent 0.38em),
+        radial-gradient(circle at 37% 77%, hsl(320 100% 94%) 0 0.16em, transparent 0.46em),
+        radial-gradient(circle at 88% 83%, #fff 0 0.12em, transparent 0.36em),
+        radial-gradient(circle at 54% 9%, hsl(140 100% 92%) 0 0.13em, transparent 0.4em);
+    background-size: 17.3em 13.1em, 23.9em 19.7em, 29.3em 23.3em, 19.1em 31.7em, 37.9em 27.1em;
+    mix-blend-mode: var(--holo-sparkle-blend);
+    opacity: calc(var(--holo-sparkle-opacity) * var(--holo));
+    transform: translate(calc(var(--px) * -26%), calc(var(--py) * -26%));
+}
+
+.holo-glare {
+    inset: -100%; /* 300% of the card, so the highlight can travel across all of it */
+    background: radial-gradient(circle at 50% 50%,
+        rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.22) 8%, transparent 17%);
+    mix-blend-mode: var(--holo-glare-blend);
+    opacity: calc(var(--holo-glare-opacity) * (0.35 + var(--holo) * 0.65));
+    transform: translate(calc(var(--px) * 13%), calc(var(--py) * 13%));
+}
+
+/*
+ * Parallax: layers float above the paper at different heights, so they slide
+ * with the light by different amounts (the nearest moves the most). The
+ * background pattern (section 2) drifts the other way.
+ */
+.id-block,
+.social-links,
+.qr,
+.theme-toggle {
+    will-change: transform;
+}
+
+.id-block      { transform: translate(calc(var(--px) * 0.5em), calc(var(--py) * 0.5em)); }
+.social-links  { transform: translate(calc(var(--px) * 0.9em), calc(var(--py) * 0.9em)); }
+.qr            { transform: translate(calc(var(--px) * 1.2em), calc(var(--py) * 1.2em)); }
+.theme-toggle  { transform: translate(calc(var(--px) * 0.7em), calc(var(--py) * 0.7em)); }
+
+/* ==========================================================================
+   7. Layouts
    ========================================================================== */
 
 /* Landscape: text top-left (nudged down to look centred), links bottom-left,
@@ -411,7 +555,7 @@ a {
 .card-scene[data-orient="portrait"] .focus { font-size: 1.85em; white-space: nowrap; }
 
 /* ==========================================================================
-   7. Theme toggle (top-right corner of the card)
+   8. Theme toggle (top-right corner of the card)
    ========================================================================== */
 
 .theme-toggle {
@@ -460,13 +604,14 @@ a {
     transition: transform 0.3s ease;
 }
 
-:root[data-theme="dark"] .theme-icon {
+:root:not([data-theme="light"]) .theme-icon {
     transform: rotate(180deg);
     filter: invert(1);
 }
 
 /* ==========================================================================
-   8. Reduced motion (js/card.js also skips the turn animation)
+   9. Reduced motion (js/card.js skips the turn; js/holo.js does not run, so
+   the foil and parallax stay at their static resting values)
    ========================================================================== */
 
 @media (prefers-reduced-motion: reduce) {

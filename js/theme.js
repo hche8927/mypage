@@ -10,7 +10,7 @@
     'use strict';
 
     const STORAGE_KEY = 'theme';
-    const DEFAULT_THEME = 'light';
+    const DEFAULT_THEME = 'dark';
     const THEME_COLOR = { light: '#F5EFE4', dark: '#0d1117' }; // <meta name="theme-color">
 
     const root = document.documentElement;

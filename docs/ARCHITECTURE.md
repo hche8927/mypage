@@ -11,6 +11,7 @@ A static site: `index.html`, one stylesheet, two small scripts. No framework, no
 | `index.html` | All content and the stamp artwork; the generated QR code between `qr:start` / `qr:end` |
 | `css/styles.css` | Tokens, the card and its layouts, the stamp, links, toggle |
 | `js/card.js` | Fitting, press tilt, press counting, the turn |
+| `js/holo.js` | The pointer / device-tilt / idle input behind the holographic foil, parallax and hover tilt |
 | `js/theme.js` | Light/dark toggle (the saved theme is applied earlier by an inline script in `<head>`) |
 
 ## The card is a physical object
@@ -35,10 +36,13 @@ The result is written to `data-orient` (`landscape` | `portrait`) and `--scale` 
 
 ## Scene versus card
 
-There are two nested boxes and the split matters:
+There are nested boxes and the split matters:
 
 - `.card-scene` **never moves**. It centres the card, holds the `perspective`, and receives the pointer events.
-- `.card` is what tilts and turns.
+- `.card-tilt` leans toward the pointer or device tilt (driven every frame by `js/holo.js`).
+- `.card` is what dips when pressed and turns over (driven by `js/card.js`).
+
+The two movers are separate elements so they never fight: the hover tilt updates every frame and must have no CSS transition, while the press dip needs one. Each has its own `perspective`, because a 3D transform on a child is only drawn with perspective by its nearest ancestor that has one.
 
 Presses are counted on the scene, on `pointerdown`. When they were counted on the card, the card tilted away from under the pointer and the press was lost, so a turn sometimes needed more than three taps. The tilt direction is also computed from the scene's box for the same reason.
 
@@ -65,11 +69,38 @@ Use `?slow` in the URL to play the turn eight times slower when working on it.
 
 ## The QR stamp
 
-The QR code sits on a postage-stamp shaped tile.
+The QR code sits on a postage-stamp shaped tile. It is deliberately **not a link**: it exists to be scanned from another screen, and a tap on it counts as a press on the card like any other spot.
 
 - **Body:** an inline SVG in `index.html`: a white square with 40 circular holes centred on its edges (10 per side, in a 100-unit `viewBox`), masked, plus two offset copies at low opacity as the shadow. It is vector, so it is identical on every browser and scale. The earlier CSS version tiled a radial gradient; iOS Safari rounded the tile sizes differently and left a stray strip of paper along one edge. There is no CSS `filter: drop-shadow` on the stamp because that renders the stamp as its own surface, which appeared to slide against the card while it tilted.
 - **QR code:** generated ahead of time (`npm run qr`, using the vendored `qrcodejs` against a stub DOM) and pasted into the HTML as one SVG path. Visitors download no QR library. `shape-rendering` is the default (anti-aliased) on purpose: `crispEdges` snapped every module to whole pixels and made the code shimmer whenever the card tilted or turned. A raster canvas scaled by CSS, which the first version used, looked blurry.
 - **Size:** `--qr` (em) is the QR size; the stamp adds 1em of paper per side. It is 14 in landscape and 20.8 in portrait.
+
+## Holographic foil, parallax and hover tilt
+
+A holographic look in the spirit of the foil cards in Pokemon TCG Pocket. The design splits into *one small set of numbers* and *what the CSS does with them*.
+
+**The numbers (`js/holo.js`).** Three sources feed one target position of "the light", smoothed frame by frame and written as custom properties on `<html>`:
+
+- the pointer (the mouse anywhere on the page; a finger while it is down),
+- the device's tilt (`deviceorientation`; on iOS it needs a permission, requested on the first tap, and if refused the other sources still work),
+- an idle drift (a slow figure-of-eight after 2.5 s without input, updated about 30 times a second and paused while the page is hidden), so the foil shimmers on a screen nobody is moving.
+
+The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` (0..1, how strongly the foil shows). The hover tilt goes to `.card-tilt` as `--tilt-x` / `--tilt-y`.
+
+**What the CSS does (section 6 of `css/styles.css`).**
+
+- Three decorative layers sit on top of the card content inside `.holo`: *foil* (rainbow bands with fine diffraction lines), *sparkle* (five sparse glitter layers with unrelated tile sizes so no grid shows) and *glare* (a soft white highlight). Each is blended into the card with `mix-blend-mode`; the face is an isolated stacking context, so nothing leaks out.
+- Each layer is an **oversized box moved with `transform`**, at different speeds (foil 14%, sparkle 26%, glare 13% in the other direction), rather than a gradient whose position changes. A transform is handled by the compositor with no repaint, which matters because the values change every frame.
+- **Parallax:** the text, links, QR stamp and toggle are translated by different amounts (0.5, 0.9, 1.2 and 0.7 mm), as if they floated at different heights above the paper, and the background pattern drifts the other way. The background is a fixed `body::before` layer for the same no-repaint reason.
+- **Per-theme blend modes.** Dark paper takes `screen` for foil and sparkle; light paper needs `multiply` / `overlay` or nothing shows. The strengths are tokens (`--holo-*`) in each theme.
+
+**Decisions and cautions.**
+
+- The effect is intentionally subtle (foil opacity about 0.13, doubling only when the pointer is active). At the first attempt (0.34) the whole card was a rainbow.
+- `.holo` never receives pointer events and is `aria-hidden`.
+- **Reduced motion:** `js/holo.js` does not run, so the foil and parallax stay at their static resting values and there is no idle drift, gyro or hover tilt.
+- **Battery:** the loop only writes a handful of custom properties, throttles to about 30 fps when idle, and stops while the tab is hidden.
+- To photograph a specific look, run the browser with reduced motion forced (`--force-prefers-reduced-motion` in Chromium), then set `--px`, `--py`, `--holo` and the tilt properties by hand.
 
 ## Card material
 
@@ -84,7 +115,7 @@ The card face is translucent paper: a tint (`--card-bg`), a faint diagonal sheen
 - The social links' hit boxes never move: only the icon inside lifts on hover/press. If the box lifted with the icon, a pointer near its bottom edge fell off it and the link flickered.
 - Hover styles are behind `@media (hover: hover)`, because touch browsers keep `:hover` on the tapped element. Press feedback uses `:active` (transient) and keyboard focus keeps a visible ring.
 - The theme toggle is a `<button>` with a constant label and `aria-pressed` for its state. Buttons do not inherit `font-size`, so the CSS sets `font-size: inherit`; otherwise the toggle would not scale with the card.
-- The saved theme is applied before first paint by an inline script (no flash), and `<meta name="theme-color">` follows the theme.
+- **Dark is the default** (the base `:root` tokens are the dark ones; `[data-theme="light"]` overrides them), so the page is dark with no saved choice and even with JavaScript off. The saved theme is applied before first paint by an inline script (no flash), and `<meta name="theme-color">` follows the theme.
 
 ## Testing
 
