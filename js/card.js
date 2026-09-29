@@ -161,28 +161,37 @@
         // ONE animation for the whole turn (no cancel / hand-off between two
         // animations: on mobile that hand-off left a few frames where neither
         // controlled the card, so the finished flat card flashed and then the
-        // turn seemed to play again). Keyframes: 0 -> edge-on (ease-in), a short
-        // HOLD at edge-on, a jump to the mirrored edge-on angle, then -> flat
-        // (ease-out). The ease-in curve races through the last ~20 degrees in
-        // a single frame, so the card is never a hairline for long: the hold
-        // (about four frames) is what guarantees there is time to swap the
-        // layout while the card is genuinely paper-thin, not still 30% wide.
+        // turn seemed to play again). The rotation never pauses: 0 -> edge-on,
+        // a jump to the mirrored edge-on angle, then -> flat. The two easing
+        // curves have the SAME slope where they meet (0.8 of the average
+        // speed), so the card keeps moving through edge-on with no dwell.
         // 89.5, not 90: an exactly edge-on matrix is singular, which some
         // mobile engines cull or flicker on.
-        const HOLD_START = 0.455;
-        const HOLD_END = 0.545;
         const anim = card.animate([
-            { transform: `rotate3d(${axis}, 0deg)`, easing: 'cubic-bezier(.5, 0, 1, .8)' },
-            { transform: `rotate3d(${axis}, 89.5deg)`, offset: HOLD_START },
-            { transform: `rotate3d(${axis}, 89.5deg)`, offset: HOLD_END },
-            { transform: `rotate3d(${axis}, -89.5deg)`, offset: HOLD_END, easing: 'cubic-bezier(0, .2, .3, 1)' },
+            { transform: `rotate3d(${axis}, 0deg)`, easing: 'cubic-bezier(.4, 0, .7, .76)' },
+            { transform: `rotate3d(${axis}, 89.5deg)`, offset: 0.5 },
+            { transform: `rotate3d(${axis}, -89.5deg)`, offset: 0.5, easing: 'cubic-bezier(.25, .2, .3, 1)' },
             { transform: `rotate3d(${axis}, 0deg)` }
         ], { duration: TURN_MS });
 
-        // Swap the layout in the middle of the hold. Driven by the
+        // Morph instead of pause: the old design fades out as the card thins
+        // toward edge-on and the new design fades in as it opens again. The
+        // card is fully transparent for a short window around the midpoint,
+        // which is when the layout is swapped, so the swap is never seen.
+        // (A second animation started in the same call: no hand-off gap.)
+        card.animate([
+            { opacity: 1, offset: 0 },
+            { opacity: 1, offset: 0.40 },
+            { opacity: 0, offset: 0.485 },
+            { opacity: 0, offset: 0.515 },
+            { opacity: 1, offset: 0.60 },
+            { opacity: 1, offset: 1 }
+        ], { duration: TURN_MS, easing: 'linear' });
+
+        // Swap the layout inside the transparent window. Driven by the
         // animation's own clock (not a timer); a timeout is only a safety net
         // for throttled/background tabs.
-        const SWAP_AT = TURN_MS * (HOLD_START + 0.03); // ~2 frames into the hold
+        const SWAP_AT = TURN_MS * 0.49; // window is 0.485 - 0.515
         let swappedYet = false; // must run exactly once, whatever the engine does
         const doSwap = () => {
             if (swappedYet) return;
@@ -197,7 +206,7 @@
             else requestAnimationFrame(watch);
         };
         requestAnimationFrame(watch);
-        setTimeout(doSwap, TURN_MS * HOLD_END + 120 * SLOW);
+        setTimeout(doSwap, TURN_MS * 0.53 + 120 * SLOW);
 
         let done = false;
         const finish = () => {
