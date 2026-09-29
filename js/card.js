@@ -133,9 +133,11 @@
     }
 
     // Turn the card over like a real one: rotate to edge-on, swap the
-    // layout while it is invisible (a sliver), then rotate the rest of the
-    // way. The sliver's height is animated to the new height so it never
-    // jumps, and nothing on the face is ever stretched while visible.
+    // layout while it is invisible (a hairline), then rotate the rest of the
+    // way. Nothing on the face is ever stretched while it is visible.
+    // Add ?slow to the URL to play the turn 8x slower (for debugging).
+    const SLOW = /[?&]slow\b/.test(window.location.search) ? 8 : 1;
+    const TURN_MS = 760 * SLOW;
     let turning = false;
     function turnCard() {
         if (turning) return;
@@ -156,41 +158,53 @@
         card.style.removeProperty('--rx');
         card.style.removeProperty('--ry');
         card.style.removeProperty('--ps');
-        const before = compute(swapped);
-        const after = compute(!swapped);
-        const dims = (o) => o.orient === 'landscape' ? [CARD_W, CARD_H] : [CARD_H, CARD_W];
-        const [w0, h0] = dims(before).map((v) => v * before.scale);
-        const [w1, h1] = dims(after).map((v) => v * after.scale);
-        const out = card.animate([
-            { transform: `rotate3d(${axis}, 0deg) scale(1, 1)` },
-            { transform: `rotate3d(${axis}, 80deg) scale(1, 1)`, offset: 0.85 },
-            // Edge-on: match the sliver's size to the new layout's
-            // (89.5, not 90: an exactly edge-on matrix is singular, which some
-            // mobile engines cull or flicker on)
-            { transform: `rotate3d(${axis}, 89.5deg) scale(${w1 / w0}, ${h1 / h0})` }
-        ], { duration: 380, easing: 'cubic-bezier(.5, 0, 1, .8)', fill: 'forwards' });
-        let swappedYet = false; // the swap must run exactly once, whatever the engine does
-        out.onfinish = () => {
+        // ONE animation for the whole turn (no cancel / hand-off between two
+        // animations: on mobile that hand-off left a few frames where neither
+        // controlled the card, so the finished flat card flashed and then the
+        // turn seemed to play again). Keyframes: 0 -> edge-on (ease-in), then a
+        // jump to the mirrored edge-on angle at the midpoint, then -> flat
+        // (ease-out). 89.5, not 90: an exactly edge-on matrix is singular,
+        // which some mobile engines cull or flicker on.
+        const anim = card.animate([
+            { transform: `rotate3d(${axis}, 0deg)`, easing: 'cubic-bezier(.5, 0, 1, .8)' },
+            { transform: `rotate3d(${axis}, 89.5deg)`, offset: 0.5 },
+            { transform: `rotate3d(${axis}, -89.5deg)`, offset: 0.5, easing: 'cubic-bezier(0, .2, .3, 1)' },
+            { transform: `rotate3d(${axis}, 0deg)` }
+        ], { duration: TURN_MS });
+
+        // Swap the layout just before the midpoint jump, while the card is a
+        // hairline. Driven by the animation's own clock (not a timer); a
+        // timeout is only a safety net for throttled/background tabs.
+        const SWAP_AT = TURN_MS * 0.5 - 24 * SLOW; // about one frame early
+        let swappedYet = false; // must run exactly once, whatever the engine does
+        const doSwap = () => {
             if (swappedYet) return;
             swappedYet = true;
             swapped = !swapped;
             layout();
-            const back = card.animate([
-                { transform: `rotate3d(${axis}, -89.5deg) scale(1, 1)` },
-                { transform: `rotate3d(${axis}, 0deg) scale(1, 1)` }
-            ], { duration: 380, easing: 'cubic-bezier(0, .2, .3, 1)' });
-            out.cancel();
-            let done = false;
-            back.onfinish = () => {
-                if (done) return;
-                done = true;
-                // Let the rest pose settle for a frame before transitions return.
-                requestAnimationFrame(() => {
-                    scene.classList.remove('is-turning');
-                    turning = false;
-                });
-            };
         };
+        const watch = () => {
+            if (swappedYet) return;
+            const t = anim.currentTime;
+            if (t !== null && Number(t) >= SWAP_AT) doSwap();
+            else requestAnimationFrame(watch);
+        };
+        requestAnimationFrame(watch);
+        setTimeout(doSwap, TURN_MS * 0.5 + 80 * SLOW);
+
+        let done = false;
+        const finish = () => {
+            if (done) return;
+            done = true;
+            doSwap(); // in case the turn was interrupted before the swap
+            // Let the rest pose settle for a frame before transitions return.
+            requestAnimationFrame(() => {
+                scene.classList.remove('is-turning');
+                turning = false;
+            });
+        };
+        anim.onfinish = finish;
+        anim.oncancel = finish;
     }
 
     // Press tilt: the card dips toward wherever it is pressed, then springs
