@@ -14,7 +14,7 @@
     /* Card material: translucent paper. No backdrop blur (Firefox drops it on
        3D-transformed elements and glitches turning them), so the tint alone
        carries the look and it is identical on every browser. */
-    --card-bg: rgba(252, 249, 242, 0.74);
+    --card-bg: rgba(252, 249, 242, 0.86);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%,
         rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 65%);
     --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.35),
@@ -40,7 +40,7 @@
     --grain-opacity: 0.045;
     --grain-blend: screen;
 
-    --card-bg: rgba(22, 27, 34, 0.72);
+    --card-bg: rgba(22, 27, 34, 0.85);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%,
         rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 65%);
     --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.14),
@@ -110,6 +110,10 @@ a { color: inherit; text-decoration: none; }
     position: relative;
     width: 100%;
     height: 100%;
+    /* Own compositor layer from the start, so the tilt and the turn are
+       rasterised once at full resolution and just transformed (no hitch or
+       soft/jagged frames when the animation begins; matters most on mobile). */
+    will-change: transform;
     /* Press tilt: JS sets --rx/--ry/--ps from where the card is pressed */
     transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--ps, 1));
     transition: transform 0.55s cubic-bezier(.3, 1.6, .5, 1); /* springy release */
@@ -126,6 +130,9 @@ a { color: inherit; text-decoration: none; }
    animation (a spring-back finishing after it looked like the turn replaying) */
 .card-scene.is-turning .card,
 .card-scene.is-turning .card.is-pressed { transition: none; }
+/* A transparent 1px outline makes browsers anti-alias the edges of the
+   rotating face (otherwise they look jagged while turned). */
+.card-scene.is-turning .face { outline: 1px solid transparent; }
 
 .face {
     position: absolute;
