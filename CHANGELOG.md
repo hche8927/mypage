@@ -9,7 +9,7 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ### Changed
 - The parallax inside the card is about 60% gentler, and the glitter drifts about 80% less.
-- The foil is weaker in both themes.
+- The foil and the glitter are weaker in both themes.
 
 ## [3.1.0] - 2026-09-29
 
