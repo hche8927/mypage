@@ -1,181 +1,135 @@
 /* ===== Theme tokens ===== */
 :root {
-    --menu-color: rgba(248, 245, 238, 0.99);
-    --shadow-color: rgba(44, 40, 37, 0.10);
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
     --text-muted: #6B6560;
     --link-color: #A65D3F;
+    --shadow-color: rgba(44, 40, 37, 0.10);
     --hover-bg: rgba(44, 40, 37, 0.05);
     --active-bg: rgba(44, 40, 37, 0.10);
+    --divider-color: rgba(44, 40, 37, 0.18);
     --grain-opacity: 0.10;
     --grain-blend: normal;
-    --divider-color: rgba(44, 40, 37, 0.18);
-    --radius: 12px;
 
-    /* Liquid-glass cards: translucent paper + light frosted blur.
-       --glass-edge: the "top light" rim, painted INSIDE the top border
-       (inset highlight) so nothing protrudes outside the card.
-       The mobile dropdown is NOT glass: it is a solid raised card in
-       the same material as the page background (--bg-color).
-       backdrop-filter on the menu was dead by spec (CSS Filter
-       Effects 2: .navbar's own backdrop-filter makes it a backdrop
-       root, so a descendant blur can only sample the navbar's flat
-       semi-opaque fill — an identity transform). Solid raised cards
-       are the standard pattern for nav dropdowns anyway, keep the
-       circuit pattern visible, and render identically everywhere. */
-    --glass-blur: 10px;
-    --glass-bg: rgba(253, 251, 247, 0.55);
-    --glass-border: rgba(44, 40, 37, 0.20);
-    --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+    /* Card material: solid paper stock (a real card is opaque) */
+    --card-bg: #FCF9F2;
+    --card-edge: rgba(44, 40, 37, 0.14);
+    --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
+        0 10px 24px rgba(44, 40, 37, 0.16);
+
+    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 
     color-scheme: light;
 }
 
-/* Circuit board pattern - light theme (dark copper traces on light bg) */
-:root {
-    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
+:root[data-theme="dark"] {
+    --bg-color: #0d1117;
+    --text-color: #e6edf3;
+    --text-muted: #9ea7b3;
+    --link-color: #6cb2ff;
+    --shadow-color: rgba(0, 0, 0, 0.6);
+    --hover-bg: rgba(255, 255, 255, 0.08);
+    --active-bg: rgba(255, 255, 255, 0.14);
+    --divider-color: rgba(255, 255, 255, 0.22);
+    --grain-opacity: 0.045;
+    --grain-blend: screen;
+
+    --card-bg: #161b22;
+    --card-edge: rgba(255, 255, 255, 0.16);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.6),
+        0 12px 28px rgba(0, 0, 0, 0.55);
+
+    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23e6edf3%22 fill-opacity=%220.28%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
+
+    color-scheme: dark;
 }
 
-/* ===== Base Styles =====
-   Background lives on <html> only: the html (canvas) background is
-   fixed to the viewport, while a body background would scroll with
-   the content. Keeping the circuit pattern on the canvas means the
-   frosted cards blur a stationary backdrop as you scroll. */
+/* ===== Page ===== */
+* { box-sizing: border-box; }
+
 html {
     background-color: var(--bg-color);
     background-image: var(--bg-pattern);
-    /* Tile larger than native so the frosted cards have soft elements
-       to blur (a 10px blur on the native 16px dots washes them out),
-       while staying dense enough that the pattern reads as texture.
-       Canvas backgrounds scroll with the document by default; pin the
-       pattern to the viewport so the frosted cards reveal a *stationary*
-       backdrop as content scrolls past (the liquid-glass signature). */
     background-attachment: fixed;
     background-size: 64px 64px;
 }
 
 body {
+    margin: 0;
     font-family: 'Noto Sans', sans-serif;
     color: var(--text-color);
-    margin: 0;
-    padding: 0;
+    -webkit-text-size-adjust: 100%;
 }
 
-/* Smooth theme transition */
-body,
-.navbar,
-.paper-container,
-.paper-card,
-.navbar-item {
-    transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
-}
+a { color: inherit; text-decoration: none; }
 
-/* ===== Layout Components ===== */
-main {
-    padding-bottom: 1rem;
-}
-
-/* ===== Paper Components (liquid glass) =====
-   Cards are frosted glass: translucent paper tint + backdrop blur so
-   the circuit pattern behind shows through softened. A 1px hairline
-   border and a 1px inset top highlight read as the glass edge
-   (brighter on top, like light catching the rim). Grain stays on top
-   via the ::after overlay below. */
-.paper-container {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 12px var(--shadow-color),
-        var(--glass-edge);
-    border-radius: var(--radius);
-    max-width: 900px;
-    margin: 1rem auto;
-    padding: 2rem;
-    position: relative;
+/* ===== Stage =====
+   Centres the card in the viewport. The card itself is sized in
+   physical millimetres (see .card) and scaled by --scale, which
+   js/card.js computes so the card always fits the stage. */
+.stage {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 16px;
     overflow: hidden;
 }
 
-.paper-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius);
-    box-shadow: 0 2px 8px var(--shadow-color),
-        var(--glass-edge);
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-    transition: transform 0.2s ease;
+/* ===== Business card =====
+   Australian standard: 90 x 55 mm. Everything inside is sized in `em`
+   where 1em = 1mm * --scale, so the whole card scales as one piece.
+   Change --card-w / --card-h to support another card size later. */
+.card-scene {
+    --card-w: 90;
+    --card-h: 55;
+    --scale: 2;
+    font-size: calc(1mm * var(--scale));
+    perspective: 240em;
+    width: calc(var(--card-w) * 1em);
+    height: calc(var(--card-h) * 1em);
+}
+.card-scene[data-orient="portrait"] {
+    width: calc(var(--card-h) * 1em);
+    height: calc(var(--card-w) * 1em);
 }
 
-.paper-card:hover {
-    transform: translateY(-2px);
+.card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    /* Press tilt: JS sets --rx/--ry/--ps from where the card is pressed */
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--ps, 1));
+    transition: transform 0.55s cubic-bezier(.3, 1.6, .5, 1); /* springy release */
+    cursor: default;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.card.is-pressed {
+    transition: transform 0.12s ease-out; /* quick, firm press */
 }
 
-/* ===== Social links (hero) ===== */
-.social-links {
-    margin-top: 1.75rem;
+.face {
+    position: absolute;
+    inset: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.75rem;
-}
-.social-links a {
-    color: var(--text-color);
-    font-size: 1.6rem;
-    line-height: 1;
-    transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.social-links img {
-    display: block;
-}
-/* Official IMDb mark: white wordmark cut to transparent, so the dark
-   theme inverts the whole icon to a light-on-dark chip */
-:root[data-theme="dark"] .social-links img {
-    filter: invert(1);
-}
-/* Press feedback while the pointer/finger is down. */
-.social-links a:active {
-    opacity: 0.55;
-    transform: translateY(-2px);
-}
-/* Mouse hover only: touch browsers stick :hover on the tapped element,
-   which would pin the dimmed/lifted state until the next tap. */
-@media (hover: hover) {
-    .social-links a:hover {
-        opacity: 0.55;
-        transform: translateY(-2px);
-    }
-}
-/* After a mouse/touch click the link keeps :focus (and :hover on touch);
-   reset the visual state so nothing sticks. Keyboard keeps a ring. */
-.social-links a:focus:not(:focus-visible):not(:active) {
-    opacity: 1;
-    transform: none;
-    outline: none;
-}
-.social-links a:focus-visible {
-    outline: 2px solid var(--link-color);
-    outline-offset: 3px;
-    border-radius: 4px;
-}
-
-/* ===== Paper grain texture =====
-   Grain surface for all "paper card" components (navbar, hero, about, ...).
-   Technique ref: NudaUI grain-paper — desaturated feTurbulence tile.
-   Drift is animated via background-position (not transform), so the
-   overlay needs no clipping/overflow rules on the host elements. */
-.paper-container,
-.paper-card,
-.navbar,
-.navbar-menu {
+    flex-direction: column;
+    padding: 5em;
+    border-radius: 2.5em; /* rounded-corner stock; use 0 for square cut */
+    background: var(--card-bg);
+    border: 0.15em solid var(--card-edge);
+    box-shadow: var(--card-shadow);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    overflow: hidden;
     isolation: isolate;
 }
 
-.paper-container::after,
-.paper-card::after,
-.navbar::after,
-.navbar-menu::after {
+/* Paper grain */
+.face::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -184,315 +138,155 @@ main {
     opacity: var(--grain-opacity);
     mix-blend-mode: var(--grain-blend);
     pointer-events: none;
-    animation: paper-drift 24s ease-in-out infinite alternate;
+    z-index: -1;
 }
 
-@keyframes paper-drift {
-    0% {
-        background-position: 0 0;
-    }
-    100% {
-        background-position: 28px 19px;
-    }
+/* ----- Front ----- */
+.name {
+    margin: 0;
+    font-size: 5.4em;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+}
+.role {
+    margin: 1.4em 0 0;
+    font-size: 2.6em;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--link-color);
+}
+.focus {
+    margin: 0.6em 0 0;
+    font-size: 2.3em;
+    line-height: 1.4;
+    color: var(--text-muted);
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .paper-container::after,
-    .paper-card::after,
-    .navbar::after,
-    .navbar-menu::after {
-        animation: none;
-    }
+/* QR code as a postage stamp. The perforation tile is 1/10 of the
+   stamp width and the holes are centred on the grid lines, so all four
+   edges get identical semicircle notches (symmetric). --qr = QR size in em. */
+.card-scene { --qr: 14; }
+.qr {
+    --t: calc((var(--qr) + 2) * 0.1em);
+    flex: none;
+    display: block;
+    padding: 1em;
+    line-height: 0;
+    background: radial-gradient(transparent 0, transparent calc(var(--t) * 0.3), #fff calc(var(--t) * 0.3))
+        calc(var(--t) / -2) calc(var(--t) / -2) / var(--t) var(--t);
+    filter: drop-shadow(0 0.15em 0.25em rgba(0, 0, 0, 0.35));
 }
-
-/* ===== Navigation (liquid glass) =====
-   No top border / top highlight: the navbar is flush against the
-   viewport top edge, where a bright rim reads as a stray white line
-   (jarring in dark). Keep the hairline on bottom/sides only. */
-.navbar {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid var(--glass-border);
-    border-top: none;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    margin: 0 auto;
-    max-width: 900px;
-    border-radius: 0 0 var(--radius) var(--radius);
+.qr-inner {
+    display: block;
+    width: calc(var(--qr) * 1em);
+    height: calc(var(--qr) * 1em);
+    padding: 0.7em;
+    background: #fff;
 }
+.qr-inner canvas, .qr-inner img { width: 100% !important; height: 100% !important; display: block; }
 
-.navbar-item strong {
-    font-family: 'Pacifico', cursive;
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 3em;
+}
+.social-links a {
     color: var(--text-color);
+    font-size: 4.2em;
+    line-height: 1;
+    display: block;
+    transition: opacity 0.18s ease, transform 0.18s ease;
 }
-
-/* Force all navbar text to theme color in dark mode (Bulma defaults are too dark) */
-:root[data-theme="dark"] .navbar-item,
-:root[data-theme="dark"] .navbar-link,
-:root[data-theme="dark"] .navbar-item strong {
-    color: #e6edf3 !important;
-}
-
-/* Base navbar-item background: neutral, theme-agnostic. Bulma's default
-   hover/active backgrounds are hard-coded (#fafafa / rgba(10,10,10,.1)),
-   which looks like a stuck white flash on dark themes and sticks on touch
-   devices that don't match (hover: hover). Making the base transparent
-   here (with the same !important weight) neutralizes any state Bulma
-   paints, so only our own themed rules below can show a background. */
-.navbar-item,
-.navbar-link {
-    background-color: transparent !important;
-    /* Bulma's global `a { color: #485fc7 }` would otherwise pin the About
-       link blue in light theme (dark was covered by the forced rule
-       above). .navbar-item outranks bare `a`, so plain specificity wins. */
-    color: var(--text-color);
-}
-
-/* Bulma's `a:hover { color: #485fc7 }` (0-1-1) outranks the rule above
-   (0-1-0), and on touch devices :hover sticks after a tap - that was the
-   "residual blue" in light theme. Kept OUTSIDE the (hover: hover) query
-   on purpose: it must apply exactly where that query does NOT match.
-   Dark theme is unaffected (its forced color already wins via !important). */
-.navbar-item:hover,
-.navbar-link:hover,
-.navbar-item:active,
-.navbar-link:active,
-.navbar-item:focus,
-.navbar-link:focus {
-    color: var(--text-color) !important;
-}
-
-/* Navbar item hover/focus/active states - theme-aware.
-   Hover bg only for real mice (@media hover:hover): touch browsers
-   stick :hover on the tapped element, which would pin the highlight.
-   Focus bg only for keyboard (focus-visible): after a mouse/touch
-   click the link keeps :focus, which would otherwise pin the
-   highlight until something else is focused. */
+.social-links img { display: block; width: 1em; height: 1em; }
+:root[data-theme="dark"] .social-links img { filter: invert(1); }
+.social-links a:active { opacity: 0.55; transform: translateY(-0.3em); }
 @media (hover: hover) {
-    .navbar-item:hover,
-    .navbar-link:hover {
-        background-color: var(--hover-bg) !important;
-        color: var(--text-color) !important;
-    }
+    .social-links a:hover { opacity: 0.55; transform: translateY(-0.3em); }
+}
+.social-links a:focus:not(:focus-visible):not(:active) {
+    opacity: 1; transform: none; outline: none;
+}
+.social-links a:focus-visible {
+    outline: 0.3em solid var(--link-color);
+    outline-offset: 0.5em;
+    border-radius: 0.6em;
 }
 
-.navbar-item:active,
-.navbar-link:active {
-    background-color: var(--active-bg) !important;
+/* Landscape front: text left, links bottom-left, QR bottom-right */
+.card-scene[data-orient="landscape"] .face {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: 1fr auto;
+    column-gap: 4em;
 }
+.card-scene[data-orient="landscape"] .id-block { grid-column: 1; grid-row: 1; }
+.card-scene[data-orient="landscape"] .social-links { grid-column: 1; grid-row: 2; align-self: end; }
+.card-scene[data-orient="landscape"] .qr { grid-column: 2; grid-row: 1 / 3; align-self: end; }
 
-/* No lingering background after pointer clicks; keyboard gets a ring.
-   :not(:active) keeps the press feedback rule (above) from being
-   out-specified while the pointer is down. */
-.navbar-item:focus:not(:focus-visible):not(:active),
-.navbar-link:focus:not(:focus-visible):not(:active) {
-    background-color: transparent !important;
+/* Portrait front: one tight group (text, QR stamp, links) centred in the
+   space below the toggle. The stamp is exactly as wide as the links row:
+   4 icons (4.2em) + 3 gaps (3em) = 25.8em, and the stamp is (--qr + 2em
+   of border) wide, so --qr = 25.8 - 2. */
+.card-scene[data-orient="portrait"] { --qr: 23.8; }
+.card-scene[data-orient="portrait"] .face {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    align-content: center;
+    row-gap: 6em;
+    padding: 9em 4.5em 5em;
 }
+.card-scene[data-orient="portrait"] .id-block { grid-row: 1; }
+.card-scene[data-orient="portrait"] .qr { grid-row: 2; justify-self: center; }
+.card-scene[data-orient="portrait"] .social-links { grid-row: 3; justify-self: center; }
+.card-scene[data-orient="portrait"] .name { font-size: 4.3em; white-space: nowrap; }
+.card-scene[data-orient="portrait"] .role { font-size: 2.05em; white-space: nowrap; }
+.card-scene[data-orient="portrait"] .focus { font-size: 1.85em; white-space: nowrap; }
 
-.navbar-item:focus-visible,
-.navbar-link:focus-visible {
-    outline: 2px solid var(--link-color);
-    outline-offset: -2px;
-    border-radius: 4px;
-}
-
-/* Kill the gray tap flash on touch devices (all interactive navbar
-   elements, including the dropdown links) */
-.navbar-item,
-.navbar-link,
-.navbar-burger {
+/* ===== Theme toggle (floating) ===== */
+.theme-toggle {
+    position: absolute;
+    top: 2.4em;
+    right: 2.4em;
+    width: 4em;
+    height: 4em;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--text-color);
+    cursor: pointer;
+    z-index: 1;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.18s ease;
 }
-
-/* Remove lingering focus highlight on mouse click while keeping keyboard a11y */
-.theme-toggle:focus:not(:focus-visible):not(:active) {
-    background-color: transparent !important;
+.theme-toggle:active { background-color: var(--active-bg); }
+@media (hover: hover) {
+    .theme-toggle:hover { background-color: var(--hover-bg); }
 }
 .theme-toggle:focus-visible {
     outline: 2px solid var(--link-color);
-    outline-offset: -2px;
-    border-radius: 4px;
-}
-
-/* Theme toggle icon (PNG, black + transparent — recolor via CSS filter).
-   Sized to match the former FA glyph (1.25rem). */
-.theme-toggle .icon {
-    display: flex;
-    align-items: center;
+    outline-offset: 2px;
 }
 .theme-icon {
-    width: 1.25rem;
-    height: 1.25rem;
+    width: 2.2em;
+    height: 2.2em;
     display: block;
+    transition: transform 0.3s ease;
 }
-/* The artwork is black; invert it to light on the dark theme. */
-:root[data-theme="dark"] .theme-icon {
-    filter: invert(1);
-}
+:root[data-theme="dark"] .theme-icon { filter: invert(1); }
 
-/* Vertical divider between the burger/menu and the theme toggle.
-   One element per layout: .nav-divider-mobile lives in the brand
-   (burger | divider | toggle), .nav-divider-desktop in the menu
-   (About | divider | toggle). Only the matching one is visible. */
-.nav-divider {
-    width: 1px;
-    height: 1.5rem;
-    align-self: center;
-    flex-shrink: 0;
-    background: var(--divider-color);
-}
-.nav-divider-mobile {
-    display: none;
+/* Smooth theme change */
+.face, body { transition: background-color 0.25s ease, color 0.25s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+    .card { transition: none; }
 }
 
-/* Dropdown menu + burger theme colors.
-   The *menu background* only applies where the dropdown layout exists
-   (Bulma's burger range, below 1024px): on desktop the menu is laid out
-   inline inside the navbar, and its square-cornered background reaches
-   the navbar's right edge, squaring off the 8px bottom-right corner.
-
-   The burger must never show a hover/focus background: on touch devices
-   :hover sticks to the tapped element, pinning Bulma's rgba(0,0,0,.05)
-   block on the burger forever. Color is pinned to the theme text color -
-   Bulma's a:hover { color: #363636 } would otherwise darken the
-   stuck-hover icon to near-invisible in dark mode. Press feedback is
-   kept via :active only; it is transient (while the pointer is down),
-   so it can never stick. */
-.navbar-burger {
-    color: var(--text-color) !important;
-    background-color: transparent;
-}
-
-.navbar-burger:hover,
-.navbar-burger:focus,
-.navbar-burger.is-active {
-    background-color: transparent;
-    color: var(--text-color) !important;
-}
-
-/* Press feedback: shown only while the pointer is down */
-.navbar-burger:active {
-    background-color: var(--active-bg);
-}
-
-.navbar-burger span {
-    background-color: currentColor;
-}
-
-/* ===== Typography ===== */
-.title,
-.content {
-    color: var(--text-color);
-}
-
-.has-text-grey {
-    color: var(--text-muted) !important;
-}
-
-a {
-    color: var(--link-color);
-}
-
-/* ===== Responsive Design =====
-   Mobile layout — breakpoint matches Bulma's own burger breakpoint (1023px),
-   so the layout is strictly binary: below 1024px we get the compact
-   mobile layout with a floating dropdown (no in-flow push-down); at
-   1024px+ the horizontal desktop nav. No intermediate "tablet" state.
-   Theme colors for the burger/dropdown are global above. */
-@media screen and (max-width: 1023px) {
-    .paper-container {
-        margin: 1rem auto;
-        padding: 2rem;
-        max-width: min(900px, calc(100% - 2rem));
-    }
-
-    .navbar {
-        margin: 0;
-        max-width: none;
-    }
-
-    /* Dropdown menu exists only in the burger range, so its themed
-       background lives here, not globally (see comment above).
-       Solid raised card: same material as the paper containers, so
-       it reads as a raised sheet of the page rather than a glass
-       pane. Sits to the right: shrinks to content width (max-content)
-       and keeps an even gap from the navbar — 0.5rem top AND right, so
-       the menu floats with uniform clearance; items inside stay
-       left-aligned. */
-       .navbar-menu {
-       background: var(--menu-color);
-       border: 1px solid var(--glass-border);
-       position: absolute;
-       width: max-content;
-       max-width: calc(100% - 0.5rem);
-       right: 0.5rem;
-       left: auto;
-       margin-top: 0.5rem;
-        box-shadow: 0 4px 12px var(--shadow-color),
-         var(--glass-edge);
-        border-radius: var(--radius);
-        padding: 1rem;
-        text-align: left;
-    }
-
-    /* Mobile menu text follows theme (Bulma defaults render grayish) */
-    .navbar-menu .navbar-item {
-        color: var(--text-color) !important;
-    }
-
-    /* Mobile layout: theme toggle lives to the RIGHT of the burger
-       (brand), separated by a vertical divider; desktop layout: it
-       stays in the menu (navbar-end) with its own divider. */
-    .theme-toggle-mobile { display: flex; }
-    .theme-toggle-desktop { display: none; }
-    .nav-divider-mobile { display: block; }
-    .nav-divider-desktop { display: none; }
-}
-
-/* Desktop layout (>=1024px): toggle in the menu (right of a divider),
-   none next to burger */
-@media screen and (min-width: 1024px) {
-    .theme-toggle-mobile { display: none; }
-    .theme-toggle-desktop { display: flex; }
-    .nav-divider-mobile { display: none; }
-    .nav-divider-desktop { display: block; }
-}
-
-
-/* ===== Dark Mode ===== */
-:root[data-theme="dark"] {
-    --shadow-color: rgba(0, 0, 0, 0.6);
-    --bg-color: #0d1117;
-    --text-color: #e6edf3;
-    --text-muted: #9ea7b3;
-    --link-color: #6cb2ff;
-    --hover-bg: rgba(255, 255, 255, 0.08);
-    --active-bg: rgba(255, 255, 255, 0.14);
-    --grain-opacity: 0.045;
-    --grain-blend: screen;
-    --divider-color: rgba(255, 255, 255, 0.22);
-    /* Dark glass: frosted dark tint + white hairline, inner top light. */
-    --glass-bg: rgba(22, 27, 34, 0.52);
-    --menu-color: rgba(22, 27, 34, 0.99);
-    --glass-border: rgba(255, 255, 255, 0.16);
-    --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.55);
-
-    /* Circuit board pattern - dark theme (subtle green traces like a real PCB) */
-    --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23e6edf3%22 fill-opacity=%220.28%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
-
-    color-scheme: dark;
-}
-
-/* -webkit- prefix for older iOS/Safari (pre-18), gathered here so
-   engines that reject the alias (e.g. Firefox devtools) skip the whole
-   block instead of flagging every inline declaration. Safari's
-   prefixed path does not resolve var(), hence literal values. */
-@supports (-webkit-backdrop-filter: blur(1px)) {
-    .paper-container,
-    .paper-card,
-    .navbar {
-        -webkit-backdrop-filter: blur(10px);
-    }
-}
+/* Keep the name clear of the on-card theme toggle */
+.card-scene[data-orient="landscape"] .id-block { padding-right: 3.5em; padding-top: 6em; }
+.card-scene[data-orient="landscape"] .name { font-size: 4.9em; }

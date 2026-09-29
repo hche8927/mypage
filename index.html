@@ -4,107 +4,54 @@
     <head>
 
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>H.C.</title>
-        <meta name="description" content="Haodong (Tom) Chen - personal website.">
-
-        <!-- Add Favicon -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+        <title>Haodong Chen</title>
+        <meta name="description" content="Haodong (Tom) Chen - Machine Learning Engineer and Researcher.">
 
         <link rel="icon"
             href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><path fill='white' d='M384 32c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H384zM160 144c-13.3 0-24 10.7-24 24V344c0 13.3 10.7 24 24 24s24-10.7 24-24V280h80v64c0 13.3 10.7 24 24 24s24-10.7 24-24V168c0-13.3-10.7-24-24-24s-24 10.7-24 24v64H184V168c0-13.3-10.7-24-24-24z'/></svg>" />
-
-        <!-- CSS Dependencies -->
-
-        <link rel="stylesheet"
-            href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
             crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-        <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
-
         <link
             href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;700&display=swap"
             rel="stylesheet">
-        <link
-            href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
-            rel="stylesheet">
-
-        <link rel="stylesheet" href="css/styles.css">
+        <link rel="stylesheet" href="css/styles.css?v=9">
 
         <script>
             // Apply saved theme before paint to avoid flash
             (function () {
-                const theme = localStorage.getItem('theme') || 'light';
+                let theme = 'light';
+                try { theme = localStorage.getItem('theme') || 'light'; } catch (e) {}
                 document.documentElement.setAttribute('data-theme', theme);
             })();
         </script>
     </head>
 
     <body>
-        <!-- Navigation -->
-        <nav class="navbar" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="#">
-                    <strong>H.C.</strong>
-                </a>
 
-                <a role="button" class="navbar-burger" aria-label="menu"
-                    aria-expanded="false">
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                    <span aria-hidden="true"></span>
-                </a>
+        <main class="stage">
+            <!-- 90 x 55 mm card (shown at 2x). js/card.js sets data-orient and --scale. -->
+            <div class="card-scene" id="scene" data-orient="landscape">
+                <div class="card" id="card">
 
-                <span class="nav-divider nav-divider-mobile"
-                    aria-hidden="true"></span>
+                    <section class="face" aria-label="Business card">
+                        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+                            <!-- Theme icon: "Half" by Freepik, flaticon.com/free-icon/half_3342251 (CC 3.0) -->
+                            <img class="theme-icon" src="assets/theme-toggle.png" alt="" aria-hidden="true">
+                        </button>
 
-                <a class="navbar-item theme-toggle theme-toggle-mobile"
-                    href="#" aria-label="Toggle dark mode">
-<!-- Theme icon: "Half" by Freepik, flaticon.com/free-icon/half_3342251 (CC 3.0) -->
-                    <span class="icon">
-                        <img class="theme-icon" src="/assets/theme-toggle.png"
-                             alt="" aria-hidden="true">
-                    </span>
-                </a>
-            </div>
+                        <div class="id-block">
+                            <h1 class="name">Haodong (Tom) Chen</h1>
+                            <p class="role">Machine Learning Engineer &amp; Researcher</p>
+                            <p class="focus">Computer Vision · 3D · Generative AI · Agentic AI</p>
+                        </div>
 
-            <div class="navbar-menu">
-                <div class="navbar-end">
-                    <a class="navbar-item" href="#about">About</a>
-                    <span class="nav-divider nav-divider-desktop"
-                        aria-hidden="true"></span>
-                    <a class="navbar-item theme-toggle theme-toggle-desktop"
-                        href="#" aria-label="Toggle dark mode">
-                        <span class="icon">
-                            <img class="theme-icon" src="/assets/theme-toggle.png"
-                                 alt="" aria-hidden="true">
-                        </span>
-                    </a>
-                </div>
-            </div>
-        </nav>
-
-        <!-- Main Content -->
-        <main>
-            <!-- Welcome -->
-            <div id="welcome" class="paper-container">
-                <section class="hero">
-                    <div class="hero-body">
-                        <h1 class="title is-1 has-text-centered"
-                            data-aos="fade-up">
-                            Hello, I'm <br>
-                            Haodong Chen
-                        </h1>
-                        <h3 class="title is-4 has-text-centered has-text-grey">
-                            Welcome to my personal page.
-                        </h3>
-                        <div class="social-links" data-aos="fade-up">
+                        <div class="social-links">
                             <a href="https://www.linkedin.com/in/haodong-tom-chen/"
-                               target="_blank" rel="noopener"
-                               aria-label="LinkedIn">
+                               target="_blank" rel="noopener" aria-label="LinkedIn">
                                 <i class="fa-brands fa-linkedin" aria-hidden="true"></i>
                             </a>
                             <a href="https://github.com/hche8927"
@@ -112,41 +59,27 @@
                                 <i class="fa-brands fa-github" aria-hidden="true"></i>
                             </a>
                             <a href="https://scholar.google.com/citations?user=uAa5nxsAAAAJ&hl=en"
-                               target="_blank" rel="noopener"
-                               aria-label="Google Scholar">
-                                <i class="fa-solid fa-graduation-cap"
-                                   aria-hidden="true"></i>
+                               target="_blank" rel="noopener" aria-label="Google Scholar">
+                                <i class="fa-solid fa-graduation-cap" aria-hidden="true"></i>
                             </a>
                             <a href="https://www.imdb.com/name/nm18435168/"
                                target="_blank" rel="noopener" aria-label="IMDb">
-                                <img src="imdb.svg" alt="" width="24" height="24">
+                                <img src="imdb.svg" alt="">
                             </a>
                         </div>
-                    </div>
-                </section>
-            </div>
 
-            <!-- About Paper -->
-            <div id="about" class="paper-container" data-aos="fade-up">
-                <section>
-                    <h2 class="title is-2">About Me</h2>
-                    <div class="content">
-                        <p>
-                            Machine Learning Engineer and Researcher
-                            with experience in computer vision,
-                            generative AI, and agentic AI. I enjoy
-                            playing games, and casually watch anime and
-                            films.
-                        </p>
-                    </div>
-                </section>
-            </div>
+                        <a class="qr" href="https://haodong.page" target="_blank" rel="noopener"
+                           aria-label="QR code linking to haodong.page">
+                            <span class="qr-inner" id="qr"></span>
+                        </a>
+                    </section>
 
+                </div>
+            </div>
         </main>
 
-        <!-- JavaScript Dependencies -->
-        <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-        <script src="js/init.js"></script>
-        <script src="js/theme.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+        <script src="js/card.js?v=9"></script>
+        <script src="js/theme.js?v=9"></script>
     </body>
 </html>
