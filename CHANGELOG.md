@@ -4,13 +4,17 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-09-29
+
 ### Added
+- `?gyro` in the URL shows a debug panel for the tilt effect: permission state, events per second, the raw `alpha` / `beta` / `gamma`, the screen angle, and the derived foil position; on iOS it includes an "Enable motion sensors" button.
 - **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket: a subtle foil (silver in dark mode, rainbow in light mode) and glitter of varied sizes slide across the card as the pointer or the device moves; the text, links, QR stamp and toggle float at different depths; the background pattern drifts the other way; the card leans toward the pointer. It drifts on its own when nothing is moving. Driven by the new `js/holo.js`; nothing moves with `prefers-reduced-motion`.
 - `tools/generate-sparkle.js` (`npm run sparkle`) generates `assets/sparkle.svg`, an irregular, seamlessly wrapping glitter tile, so the dots never line up into a visible grid.
 - On iPhones and iPads the first tap asks permission to read the motion sensors (needed for the tilt effect).
 - `npm run check` now also verifies that every element id the scripts look up exists in the page.
 
 ### Changed
+- **The tilt effect now works with the screen turned sideways** (landscape). Device angles are converted through the direction of gravity and the screen's rotation, instead of using `beta` / `gamma` directly, which swap roles when the phone is turned.
 - **The page is dark by default** (was light). A saved choice still wins.
 - The background pattern is a fixed layer of its own instead of the `html` background, so it can drift without repainting.
 
@@ -94,7 +98,8 @@ A major release: a codebase-wide refactor plus the project's first licence. The 
 
 The original classic single page: navigation bar, hero with social links, and an About section, with a liquid-glass look, a circuit-board background and light/dark themes. Notes from that version are in [docs/archive/session-log-2026-08.md](docs/archive/session-log-2026-08.md).
 
-[Unreleased]: https://github.com/hche8927/mypage/compare/3.0.0...HEAD
+[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.0...HEAD
+[3.1.0]: https://github.com/hche8927/mypage/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/hche8927/mypage/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/hche8927/mypage/compare/2.1.5...2.2.0
 [2.1.5]: https://github.com/hche8927/mypage/compare/2.1.4...2.1.5

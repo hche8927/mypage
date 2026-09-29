@@ -27,7 +27,7 @@ npm run check      # sanity checks: syntax, local links, CSS variables, shared c
 npm run qr         # regenerate the QR code in index.html (see "Changing the QR code")
 ```
 
-Adding `?slow` to the address (for example `http://localhost:8000/?slow`) plays the turn animation eight times slower, which helps when debugging it.
+Adding `?slow` to the address (for example `http://localhost:8000/?slow`) plays the turn animation eight times slower, which helps when debugging it. Adding `?gyro` shows a small panel with the raw phone-tilt values, the permission state and the derived foil position, for checking the tilt effect on a real device.
 
 ## Project structure
 

@@ -87,6 +87,19 @@ A holographic look in the spirit of the foil cards in Pokemon TCG Pocket, (the f
 
 The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` (0..1, how strongly the foil shows). The hover tilt goes to `.card-tilt` as `--tilt-x` / `--tilt-y`.
 
+**Device tilt maths.** `deviceorientation` reports Euler angles (`beta` front-back, `gamma` left-right). Used directly they are wrong as soon as the phone is turned sideways: the two swap roles, and `gamma` degenerates near vertical in landscape. So `leanFromDevice()` works with the direction of *gravity in the device's own frame*, `(-cos(beta) sin(gamma), sin(beta))`, and reads it along the screen's own right and up axes, which depend on the screen rotation (`screen.orientation.angle`, falling back to `window.orientation`):
+
+| Screen angle | Screen right (device x, y) | Screen up (device x, y) |
+| --- | --- | --- |
+| 0 (natural portrait) | (1, 0) | (0, 1) |
+| 90 (device turned counter-clockwise) | (0, -1) | (1, 0) |
+| 180 | (-1, 0) | (0, -1) |
+| 270 (device turned clockwise) | (0, 1) | (-1, 0) |
+
+A phone held to read (about 50 degrees back from upright) is the neutral pose; 22 degrees either way is the full range. The sign matches the press dip: the side of the screen that tilts away from you is the side the light moves toward. The maths was checked in a script that builds poses in screen space for all four angles and confirms the result; what could not be checked without devices is whether every device follows the angle convention in the table, which is what the debug panel is for.
+
+**Debugging on a device.** Add `?gyro` to the URL for a small panel showing the permission state, whether events are arriving (and how many per second), the raw `alpha` / `beta` / `gamma`, the screen angle, the derived light position and the values driving the foil. On iOS, when permission is still needed (or was refused), the panel also has an "Enable motion sensors" button.
+
 **What the CSS does (section 6 of `css/styles.css`).**
 
 - Two decorative layers sit on top of the card content inside `.holo`: *foil* (broad colour bands: silver in dark mode, rainbow in light mode, both kept subtle) and *sparkle* (glitter dots of varied sizes). Each is blended into the card with `mix-blend-mode`; the face is an isolated stacking context, so nothing leaks out. There is no "glare" spot: a round white highlight following the pointer was tried and removed.
