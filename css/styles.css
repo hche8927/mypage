@@ -47,7 +47,7 @@
         0 12px 28px rgba(0, 0, 0, 0.55);
 
     /* Holographic foil (section 6): strength and blend mode per layer */
-    --holo-foil-opacity: 0.13;
+    --holo-foil-opacity: 0.2;
     --holo-foil-blend: screen;
     --holo-glare-opacity: 0.45;
     --holo-glare-blend: overlay;
@@ -91,8 +91,8 @@
         0 10px 24px rgba(44, 40, 37, 0.16);
 
     /* Light paper needs different blend modes for the foil to show at all */
-    --holo-foil-opacity: 0.11;
-    --holo-foil-blend: multiply;
+    --holo-foil-opacity: 0.5;
+    --holo-foil-blend: soft-light;
     --holo-glare-opacity: 0.6;
     --holo-glare-blend: overlay;
     --holo-sparkle-opacity: 0.4;
@@ -421,67 +421,67 @@ a {
    ========================================================================== */
 
 /*
- * Three decorative layers sit on top of the card content, each blended into it
- * (the face is an isolated stacking context, so nothing leaks outside):
- *   - foil:    rainbow bands with fine diffraction lines, sliding as you tilt;
- *   - sparkle: glitter dots, sliding twice as fast for a sense of depth;
+ * Three decorative layers sit on top of the card content inside .holo, each
+ * blended into it (the face is an isolated stacking context, so nothing leaks
+ * outside):
+ *   - foil:    silver bands (with fine brushed-metal lines) sliding as you tilt;
+ *   - sparkle: glitter dots of varied sizes, sliding twice as fast for depth;
  *   - glare:   a soft white highlight that follows the "light".
- * Each is an oversized box moved with a transform (compositor only, no
- * repaint) by --px / --py, which js/holo.js updates from the pointer, the
- * device tilt or an idle drift. --holo scales how strong they are.
- * They never block clicks (pointer-events: none) and are hidden from assistive
- * technology.
+ * Each layer is exactly card-sized and only its BACKGROUND moves
+ * (background-position, driven by --px / --py). Oversized layers moved with
+ * transforms were tried first; blended, they left thin seams at the edges of
+ * the moved layer. --px / --py / --holo are written by js/holo.js from the
+ * pointer, the device tilt or an idle drift. The layers never block clicks
+ * and are hidden from assistive technology.
  */
 .holo {
     position: absolute;
     inset: 0;
-    overflow: hidden;
-    border-radius: inherit;
     pointer-events: none;
 }
 
 .holo > span {
     position: absolute;
-    will-change: transform;
+    inset: 0;
 }
 
 .holo-foil {
-    inset: -50%;
     background:
-        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.30) 0 0.12em, transparent 0.12em 0.36em),
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.22) 0 0.12em, transparent 0.12em 0.36em),
         repeating-linear-gradient(115deg,
-            hsl(350 100% 62%) 0%, hsl(40 100% 62%) 3.7%, hsl(100 100% 60%) 7.3%,
-            hsl(170 100% 58%) 11%, hsl(220 100% 66%) 14.7%, hsl(290 100% 66%) 18.3%,
-            hsl(350 100% 62%) 22%);
-    background-blend-mode: soft-light, normal; /* the fine lines darken the rainbow */
+            #98a0ab 0%, #f6f8fb 4%, #c3c9d2 8%, #7c838e 13%,
+            #eaeef3 17%, #b1b8c2 22%, #98a0ab 26%);
+    background-size: auto, 200% 200%;
+    background-position: 0 0, calc(var(--px) * -25em) calc(var(--py) * -15em);
+    background-blend-mode: soft-light, normal; /* the fine lines give it a brushed-metal grain */
     mix-blend-mode: var(--holo-foil-blend);
     opacity: calc(var(--holo-foil-opacity) * (0.45 + var(--holo) * 0.85));
-    transform: translate(calc(var(--px) * -14%), calc(var(--py) * -14%));
 }
 
 .holo-sparkle {
-    inset: -50%;
-    /* Five sparse layers with unrelated tile sizes, so the dots never line up
-       into a visible grid. */
-    background:
-        radial-gradient(circle at 12% 18%, hsl(60 100% 92%) 0 0.14em, transparent 0.42em),
-        radial-gradient(circle at 68% 42%, hsl(190 100% 94%) 0 0.12em, transparent 0.38em),
-        radial-gradient(circle at 37% 77%, hsl(320 100% 94%) 0 0.16em, transparent 0.46em),
-        radial-gradient(circle at 88% 83%, #fff 0 0.12em, transparent 0.36em),
-        radial-gradient(circle at 54% 9%, hsl(140 100% 92%) 0 0.13em, transparent 0.4em);
-    background-size: 17.3em 13.1em, 23.9em 19.7em, 29.3em 23.3em, 19.1em 31.7em, 37.9em 27.1em;
+    /* Seven sparse layers: many fine specks, a few larger ones. Unrelated tile
+       sizes keep the dots from lining up into a grid; the varied radii keep them
+       from looking uniform. Each dot is a bright core with a soft halo. */
+    background-image:
+        radial-gradient(circle at 12% 18%, #fff 0 0.06em, transparent 0.17em),
+        radial-gradient(circle at 68% 42%, #eef2f7 0 0.08em, transparent 0.22em),
+        radial-gradient(circle at 37% 77%, #fff 0 0.10em, transparent 0.27em),
+        radial-gradient(circle at 88% 83%, #e4eaf1 0 0.13em, transparent 0.34em),
+        radial-gradient(circle at 54% 9%, #fff 0 0.17em, transparent 0.44em),
+        radial-gradient(circle at 25% 55%, #f3f6fa 0 0.22em, transparent 0.56em),
+        radial-gradient(circle at 76% 24%, #fff 0 0.28em, transparent 0.7em);
+    background-size: 13.7em 11.3em, 19.3em 15.9em, 23.1em 27.7em, 29.9em 21.1em,
+        33.7em 37.3em, 41.3em 31.9em, 47.9em 43.7em;
+    background-position: calc(var(--px) * -47em) calc(var(--py) * -29em);
     mix-blend-mode: var(--holo-sparkle-blend);
     opacity: calc(var(--holo-sparkle-opacity) * var(--holo));
-    transform: translate(calc(var(--px) * -26%), calc(var(--py) * -26%));
 }
 
 .holo-glare {
-    inset: -100%; /* 300% of the card, so the highlight can travel across all of it */
-    background: radial-gradient(circle at 50% 50%,
-        rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.22) 8%, transparent 17%);
+    background: radial-gradient(circle at calc(50% + var(--px) * 40%) calc(50% + var(--py) * 40%),
+        rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.22) 24%, transparent 51%);
     mix-blend-mode: var(--holo-glare-blend);
     opacity: calc(var(--holo-glare-opacity) * (0.35 + var(--holo) * 0.65));
-    transform: translate(calc(var(--px) * 13%), calc(var(--py) * 13%));
 }
 
 /*

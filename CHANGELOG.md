@@ -5,7 +5,7 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 ## [Unreleased]
 
 ### Added
-- **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket: a rainbow foil, glitter and a soft glare slide across the card as the pointer or the device moves; the text, links, QR stamp and toggle float at different depths; the background pattern drifts the other way; the card leans toward the pointer. It drifts on its own when nothing is moving. Driven by the new `js/holo.js`; nothing moves with `prefers-reduced-motion`.
+- **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket: a silver foil, glitter of varied sizes and a soft glare slide across the card as the pointer or the device moves; the text, links, QR stamp and toggle float at different depths; the background pattern drifts the other way; the card leans toward the pointer. It drifts on its own when nothing is moving. Driven by the new `js/holo.js`; nothing moves with `prefers-reduced-motion`.
 - On iPhones and iPads the first tap asks permission to read the motion sensors (needed for the tilt effect).
 - `npm run check` now also verifies that every element id the scripts look up exists in the page.
 
