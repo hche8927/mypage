@@ -4,12 +4,15 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [3.1.1] - 2026-09-29
+
 ### Fixed
 - In the vertical layout, tilting far to the right slid the foil off the card and revealed a strip with no foil. The foil position is now relative to the card, so it covers it fully in both orientations.
 
 ### Changed
 - The parallax inside the card is about 60% gentler, and the glitter drifts about 80% less.
-- The foil and the glitter are weaker in both themes.
+- The foil and the glitter are weaker in both themes (foil 0.03 dark / 0.02 light, glitter 0.2 / 0.1).
+- The largest glitter dots are about 40% smaller.
 
 ## [3.1.0] - 2026-09-29
 
@@ -105,7 +108,8 @@ A major release: a codebase-wide refactor plus the project's first licence. The 
 
 The original classic single page: navigation bar, hero with social links, and an About section, with a liquid-glass look, a circuit-board background and light/dark themes. Notes from that version are in [docs/archive/session-log-2026-08.md](docs/archive/session-log-2026-08.md).
 
-[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.0...HEAD
+[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.1...HEAD
+[3.1.1]: https://github.com/hche8927/mypage/compare/3.1.0...3.1.1
 [3.1.0]: https://github.com/hche8927/mypage/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/hche8927/mypage/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/hche8927/mypage/compare/2.1.5...2.2.0
