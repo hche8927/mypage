@@ -4,20 +4,24 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
-### Changed
-- Refactored the codebase; the page looks and behaves the same, apart from the icon change noted below.
-- Social icons (LinkedIn, GitHub, Scholar) are inline SVG instead of the Font Awesome icon font, which removes a render-blocking stylesheet and a font download. They sit where the glyphs sat, within anti-aliasing differences.
-- The QR code is rendered ahead of time by `tools/generate-qr.js` and inlined in the HTML, so the QR library is no longer downloaded and the code no longer pops in after load.
-- The theme icon's half-turn is CSS only; `js/theme.js` is much smaller and tolerates blocked storage.
-- `js/card.js` reorganised into named sections with grouped constants and single-purpose helpers.
-- `css/styles.css` reorganised into numbered sections with stale comments and unused tokens removed.
-- The old session notes moved to `docs/archive/`.
+## [3.0.0] - 2026-09-29
+
+A major release: a codebase-wide refactor plus the project's first licence. The page looks and behaves the same for visitors, but the file layout moved (for example `imdb.svg` is now `assets/imdb.svg`, and the Font Awesome and QR libraries are no longer loaded), so anything that linked to those files or copied the old structure needs updating.
 
 ### Added
+- **Licence:** the project is now under CC BY-NC 4.0 (`LICENSE`). The README explains what that means and what stays third-party.
+- **Credit** for the background pattern, "Tic Tac Toe" from [Hero Patterns](https://heropatterns.com/) by Steve Schoger (CC BY 4.0), in the README, the CSS and the HTML.
 - README, this changelog and `docs/ARCHITECTURE.md`.
 - `tools/check.js` (`npm run check`), `tools/generate-qr.js` (`npm run qr`), `tools/serve.js` (`npm run serve`) and `package.json` scripts; none has a dependency.
 - `.editorconfig`, `.gitattributes` (LF line endings) and a fuller `.gitignore`.
 - `<meta>` tags for canonical URL, Open Graph and `theme-color` (kept in sync with the theme), an SVG favicon file, and `aria-pressed` on the theme toggle.
+
+### Changed
+- Refactored the codebase: `js/card.js` is organised into named sections with grouped constants and single-purpose helpers; `css/styles.css` into numbered sections, with stale comments and unused tokens removed.
+- Social icons (LinkedIn, GitHub, Scholar) are inline SVG instead of the Font Awesome icon font, which removes a render-blocking stylesheet and a font download. They sit where the glyphs sat, within anti-aliasing differences.
+- The QR code is rendered ahead of time by `tools/generate-qr.js` and inlined in the HTML, so the QR library is no longer downloaded and the code no longer pops in after load.
+- The theme icon's half-turn is CSS only; `js/theme.js` is much smaller and tolerates blocked storage.
+- The old session notes moved to `docs/archive/`.
 
 ### Removed
 - The `?v=NN` cache-busting query strings (they had to be bumped by hand).
@@ -77,7 +81,8 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 The original classic single page: navigation bar, hero with social links, and an About section, with a liquid-glass look, a circuit-board background and light/dark themes. Notes from that version are in [docs/archive/session-log-2026-08.md](docs/archive/session-log-2026-08.md).
 
-[Unreleased]: https://github.com/hche8927/mypage/compare/2.2.0...HEAD
+[Unreleased]: https://github.com/hche8927/mypage/compare/3.0.0...HEAD
+[3.0.0]: https://github.com/hche8927/mypage/compare/2.2.0...3.0.0
 [2.2.0]: https://github.com/hche8927/mypage/compare/2.1.5...2.2.0
 [2.1.5]: https://github.com/hche8927/mypage/compare/2.1.4...2.1.5
 [2.1.4]: https://github.com/hche8927/mypage/compare/2.1.3...2.1.4

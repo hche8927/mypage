@@ -45,6 +45,7 @@ docs/
   ARCHITECTURE.md     How it works and why (read this before changing the card)
   archive/            Notes from earlier versions, kept for reference
 CHANGELOG.md          Release history
+LICENSE               CC BY-NC 4.0 (non-commercial); see "Licence" below
 CNAME                 Custom domain for GitHub Pages
 ```
 
@@ -84,16 +85,23 @@ The site is served by **GitHub Pages** from the `main` branch (root folder). Pus
 - Push branches and tags with separate `git push` commands. A single push that carries several refs can silently skip the Pages build.
 - After a deploy, hard-refresh (`Ctrl+F5`) to bypass the browser cache; Pages sends a 10 minute cache lifetime.
 
+## Licence
+
+Copyright (c) 2026 Haodong (Tom) Chen. This project is licensed under the [Creative Commons Attribution-NonCommercial 4.0 International](https://creativecommons.org/licenses/by-nc/4.0/) licence (CC BY-NC 4.0); the full text is in [LICENSE](LICENSE).
+
+In short, you may copy and adapt the code and design for **non-commercial** purposes if you give credit and say what you changed. You may not use it commercially without permission.
+
+- **Personal content is not part of the licence's grant to reuse as your own.** The name, role, profile links and QR target are mine. If you build on this project, replace them with your own.
+- **Third-party material keeps its own licence** (next section). The licence above covers only the original work in this repository.
+- Creative Commons notes that its licences are not designed for software. This is a personal website whose value is largely its design, but if you would like the code under a software-specific non-commercial licence (for example PolyForm Noncommercial), change `LICENSE` and the `license` field in `package.json` together.
+
 ## Credits and third-party material
 
 | What | Source | Licence |
 | --- | --- | --- |
+| Background pattern ("Tic Tac Toe", recoloured for the light and dark themes) | [Hero Patterns](https://heropatterns.com/) by Steve Schoger | CC BY 4.0 (attribution required) |
 | Theme toggle icon ("Half") | Freepik, [flaticon.com](https://www.flaticon.com/free-icon/half_3342251) | CC BY 3.0 (attribution required) |
 | LinkedIn, GitHub and graduation-cap icons (inline SVG) and the favicon glyph | [Font Awesome Free 6.5.1](https://fontawesome.com/license/free) | Icons: CC BY 4.0 |
 | IMDb mark (`assets/imdb.svg`) | Official [IMDb brand toolkit](https://brand.imdb.com); IMDb's brand guidelines apply | Trademark of IMDb |
 | Noto Sans | Google Fonts | SIL OFL 1.1 |
 | QR generator (`tools/vendor/`) | [qrcodejs](https://github.com/davidshimjs/qrcodejs) by Shim Sangmin | MIT |
-
-The circuit-style background tile (crosses and circles) has no recorded source. If it came from a pattern library such as Hero Patterns (CC BY 4.0), add the credit here.
-
-The repository has no licence file yet, so by default all rights are reserved. Add a `LICENSE` if you want others to reuse the code.

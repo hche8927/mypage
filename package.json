@@ -1,6 +1,8 @@
 {
   "name": "haodong-page",
   "private": true,
+  "license": "CC-BY-NC-4.0",
+  "author": "Haodong (Tom) Chen",
   "description": "Personal website of Haodong (Tom) Chen: an interactive 90 x 55 mm business card. Plain HTML, CSS and JavaScript; no build step.",
   "homepage": "https://haodong.page",
   "repository": {

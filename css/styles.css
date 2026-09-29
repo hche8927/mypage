@@ -42,8 +42,9 @@
     --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
         0 10px 24px rgba(44, 40, 37, 0.16);
 
-    /* Circuit-board tile (data URI, so it can't carry a theme variable:
-       the only difference between the two themes is its fill colour). */
+    /* Background tile: "Tic Tac Toe" from Hero Patterns (https://heropatterns.com/,
+       by Steve Schoger, CC BY 4.0), recoloured. It is a data URI, so it can't
+       use a theme variable: the two themes differ only in its fill colour. */
     --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 
     color-scheme: light;
