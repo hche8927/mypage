@@ -15,6 +15,7 @@
   "scripts": {
     "serve": "node tools/serve.js",
     "check": "node tools/check.js",
-    "qr": "node tools/generate-qr.js"
+    "qr": "node tools/generate-qr.js",
+    "sparkle": "node tools/generate-sparkle.js"
   }
 }

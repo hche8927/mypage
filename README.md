@@ -9,7 +9,7 @@ Live at **<https://haodong.page>**.
 - **Real card dimensions.** The card is 90 x 55 mm at 2x real size and scales down (never up) to fit small screens.
 - **Two orientations, one card.** Landscape if it fits, otherwise portrait, otherwise it shrinks. The choice follows the screen and its rotation.
 - **Feels physical.** Pressing the card dips it toward the pressed point and it springs back. Three quick presses in one spot turn it over to the other orientation, spinning the way it was pushed (a small easter egg).
-- **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket. A silver foil, glitter of varied sizes and a soft glare slide across the card as you move the mouse or tilt your phone, the text, links and QR stamp float at different depths, the card leans toward the pointer, and the background pattern drifts the other way. It drifts on its own when nothing is moving. (With `prefers-reduced-motion` it stays still.)
+- **Holographic foil and parallax**, in the spirit of the foil cards in Pokemon TCG Pocket. A subtle foil (silver in dark mode, rainbow in light mode) and glitter of varied sizes slide across the card as you move the mouse or tilt your phone, the text, links and QR stamp float at different depths, the card leans toward the pointer, and the background pattern drifts the other way. It drifts on its own when nothing is moving. (With `prefers-reduced-motion` it stays still.)
 - **Dark by default**, with a light theme; the choice is remembered.
 - **Sharp everywhere.** The QR code and its postage-stamp border are vector graphics, so they render identically in every browser and at every scale.
 - **No runtime dependencies.** Plain HTML, CSS and JavaScript with no framework and no build step; the only third-party request is the Noto Sans web font, which falls back to system fonts.
@@ -37,10 +37,11 @@ css/styles.css        Design tokens, layout, card, stamp, links, toggle
 js/card.js            Fitting (orientation + scale), press tilt, turn animation
 js/holo.js            Pointer / device-tilt / idle input for the foil, parallax and hover tilt
 js/theme.js           Dark/light toggle
-assets/               favicon.svg, imdb.svg, theme-toggle.png
+assets/               favicon.svg, imdb.svg, theme-toggle.png, sparkle.svg (generated glitter tile)
 tools/
   check.js            Dependency-free sanity checks (npm run check)
   generate-qr.js      Renders the QR code into index.html (npm run qr)
+  generate-sparkle.js Generates assets/sparkle.svg (npm run sparkle)
   serve.js            Tiny static server for local development
   vendor/             qrcode.min.js, used only by generate-qr.js (MIT)
 docs/
@@ -72,7 +73,7 @@ node tools/generate-qr.js https://example.com
 
 Also update the `href` and `aria-label` of the `.qr` link.
 
-**Tune the interaction.** All the numbers (press tilt, press count and time window, turn duration and easing) are constants at the top of `js/card.js`; the hover tilt, smoothing, idle drift and gyroscope range are at the top of `js/holo.js`. How strong the foil looks is set by the `--holo-*` custom properties at the top of `css/styles.css` (one set per theme).
+**Tune the interaction.** All the numbers (press tilt, press count and time window, turn duration and easing) are constants at the top of `js/card.js`; the hover tilt, smoothing, idle drift and gyroscope range are at the top of `js/holo.js`. How the foil looks (its colours, strength and blend mode) is set by the `--holo-*` custom properties at the top of `css/styles.css`, one set per theme. To change the glitter (density, sizes, seed), edit the constants in `tools/generate-sparkle.js` and run `npm run sparkle`.
 
 ## Browser support
 

@@ -7,7 +7,7 @@
  *   - the device's tilt (phones with a gyroscope), and
  *   - a slow idle drift, so the foil shimmers even when nothing is moving.
  * They are smoothed and written as CSS custom properties on <html>; the
- * CSS turns them into foil position, glare, sparkle, parallax and tilt:
+ * CSS turns them into foil and sparkle position, parallax and tilt:
  *
  *   --px, --py   -1..1   where the "light" is (0 = centre)
  *   --mx, --my    0..1   the same, as fractions

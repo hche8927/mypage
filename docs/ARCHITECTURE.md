@@ -77,7 +77,7 @@ The QR code sits on a postage-stamp shaped tile. It is deliberately **not a link
 
 ## Holographic foil, parallax and hover tilt
 
-A holographic look in the spirit of the foil cards in Pokemon TCG Pocket, in silver (an earlier rainbow foil was dropped: too loud). The design splits into *one small set of numbers* and *what the CSS does with them*.
+A holographic look in the spirit of the foil cards in Pokemon TCG Pocket, (the foil is silver in dark mode and rainbow in light mode; an earlier all-rainbow version was too loud). The design splits into *one small set of numbers* and *what the CSS does with them*.
 
 **The numbers (`js/holo.js`).** Three sources feed one target position of "the light", smoothed frame by frame and written as custom properties on `<html>`:
 
@@ -89,14 +89,16 @@ The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` 
 
 **What the CSS does (section 6 of `css/styles.css`).**
 
-- Three decorative layers sit on top of the card content inside `.holo`: *foil* (silver bands with fine brushed-metal lines), *sparkle* (seven sparse glitter layers with varied dot sizes and unrelated tile sizes, so no grid shows and the dots don't look uniform) and *glare* (a soft white highlight). Each is blended into the card with `mix-blend-mode`; the face is an isolated stacking context, so nothing leaks out.
-- Each layer is **exactly card-sized and only its background moves** (`background-position`, at different speeds: foil slowest, sparkle twice as fast, glare the other way). A first version used oversized layers moved with `transform`, which is cheaper to animate but, once blended, left thin seams at the edges of the moved layers. Tiled and repeating backgrounds have no edges, so nothing can show.
+- Two decorative layers sit on top of the card content inside `.holo`: *foil* (broad colour bands: silver in dark mode, rainbow in light mode, both kept subtle) and *sparkle* (glitter dots of varied sizes). Each is blended into the card with `mix-blend-mode`; the face is an isolated stacking context, so nothing leaks out. There is no "glare" spot: a round white highlight following the pointer was tried and removed.
+- Each layer is **exactly card-sized and only its background moves** (`background-position`; the sparkle moves about twice as fast as the foil for depth). A first version used oversized layers moved with `transform`, which is cheaper to animate but, once blended, left thin seams at the edges of the moved layers. Repeating backgrounds have no edges, so nothing can show.
+- **The glitter is one generated tile, not CSS gradients.** Tiled CSS gradients repeat every few em, so however many layers you stack the dots fall into a visible lattice (this happened with seven of them). `tools/generate-sparkle.js` writes `assets/sparkle.svg`: 200 x 120 em (larger than the card plus the parallax travel), about 160 dots placed with Poisson-disc sampling (no two closer than 10 em) from a fixed seed, sizes skewed toward fine specks with a few larger dots, measured on a torus and drawn on both sides of the edges so it wraps without a seam. One SVG unit is one em, so it scales with the card.
 - **Parallax:** the text, links, QR stamp and toggle are translated by different amounts (0.5, 0.9, 1.2 and 0.7 mm), as if they floated at different heights above the paper, and the background pattern drifts the other way. The background is a fixed `body::before` layer for the same no-repaint reason.
 - **Per-theme blend modes.** Dark paper takes `screen` for foil and sparkle; light paper needs `multiply` / `overlay` or nothing shows. The strengths are tokens (`--holo-*`) in each theme.
 
 **Decisions and cautions.**
 
-- The effect is intentionally subtle (foil opacity 0.2 on dark, 0.3 on light, rising by about 40% only while the pointer is active).
+- The effect is intentionally subtle (foil opacity 0.11 on dark, 0.08 on light, rising by about 40% only while the pointer is active). Earlier values (0.34 rainbow, then 0.2 silver) were too loud.
+- The foil also once had fine horizontal "brushed metal" lines; with the glitter they read as a grid texture, so they were removed.
 - `.holo` never receives pointer events and is `aria-hidden`.
 - **Reduced motion:** `js/holo.js` does not run, so the foil and parallax stay at their static resting values and there is no idle drift, gyro or hover tilt.
 - **Battery:** the loop only writes a handful of custom properties, throttles to about 30 fps when idle, and stops while the tab is hidden.

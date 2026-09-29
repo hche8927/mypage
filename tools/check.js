@@ -66,6 +66,11 @@ if (!/<!-- qr:start[\s\S]*<svg[\s\S]*<!-- qr:end -->/.test(html)) {
 
 // --- CSS ---------------------------------------------------------------------
 const css = read('css/styles.css');
+// Local url(...) references in the stylesheet resolve relative to css/
+for (const [, target] of css.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/g)) {
+    if (/^(https?:|data:|#|%23)/.test(target)) continue; // %23 = a fragment inside a data URI
+    if (!fs.existsSync(path.join(ROOT, 'css', target))) fail(`css/styles.css: url(${target}) does not exist`);
+}
 const defined = new Set([...css.matchAll(/(--[\w-]+)\s*:/g)].map((m) => m[1]));
 for (const [, name] of css.matchAll(/var\((--[\w-]+)\s*\)/g)) { // no fallback given
     if (!defined.has(name)) fail(`css/styles.css: var(${name}) is never defined`);
