@@ -110,7 +110,7 @@ A phone held to read (about 50 degrees back from upright) is the neutral pose; 2
 
 **Decisions and cautions.**
 
-- The effect is intentionally subtle (foil opacity 0.07 on dark, 0.04 on light, rising by about 40% only while the pointer is active). Earlier values (0.34 rainbow, 0.2 silver, then 0.11 / 0.08) were all too loud.
+- The effect is intentionally subtle (foil opacity 0.03 on dark, 0.02 on light, glitter 0.2 and 0.1, rising by about 40% only while the pointer is active). Earlier values (0.34 rainbow, 0.2 silver, then 0.11 / 0.08 and 0.07 / 0.04) were all too loud.
 - The foil also once had fine horizontal "brushed metal" lines; with the glitter they read as a grid texture, so they were removed.
 - `.holo` never receives pointer events and is `aria-hidden`.
 - **Reduced motion:** `js/holo.js` does not run, so the foil and parallax stay at their static resting values and there is no idle drift, gyro or hover tilt.
