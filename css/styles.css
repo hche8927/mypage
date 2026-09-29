@@ -1,19 +1,38 @@
-/* ===== Theme tokens ===== */
+/*
+ * haodong.page - stylesheet
+ *
+ *   1. Design tokens (light / dark)
+ *   2. Base
+ *   3. Stage and card scene (physical sizing, orientation)
+ *   4. Card body (tilt, turn) and paper face
+ *   5. Content: text, QR stamp, links
+ *   6. Layouts: landscape, portrait
+ *   7. Theme toggle
+ *   8. Reduced motion
+ *
+ * The card is sized in millimetres: inside .card-scene, 1em = 1mm * --scale
+ * and every card dimension is written in em, so the whole card scales as one
+ * piece. js/card.js chooses --scale and data-orient (see docs/ARCHITECTURE.md).
+ */
+
+/* ==========================================================================
+   1. Design tokens
+   ========================================================================== */
+
 :root {
     --bg-color: #F5EFE4;
     --text-color: #2C2825;
     --text-muted: #6B6560;
     --link-color: #A65D3F;
-    --shadow-color: rgba(44, 40, 37, 0.10);
     --hover-bg: rgba(44, 40, 37, 0.05);
     --active-bg: rgba(44, 40, 37, 0.10);
-    --divider-color: rgba(44, 40, 37, 0.18);
     --grain-opacity: 0.10;
     --grain-blend: normal;
 
-    /* Card material: translucent paper. No backdrop blur (Firefox drops it on
-       3D-transformed elements and glitches turning them), so the tint alone
-       carries the look and it is identical on every browser. */
+    /* Card paper: translucent tint, faint sheen, lit rim, soft shadow.
+       No backdrop blur: Firefox drops it on 3D-transformed elements and
+       glitches while they turn, so the tint alone carries the look and it is
+       identical in every browser. */
     --card-bg: rgba(252, 249, 242, 0.86);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%,
         rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 65%);
@@ -23,6 +42,8 @@
     --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
         0 10px 24px rgba(44, 40, 37, 0.16);
 
+    /* Circuit-board tile (data URI, so it can't carry a theme variable:
+       the only difference between the two themes is its fill colour). */
     --bg-pattern: url("data:image/svg+xml,%3Csvg width=%2264%22 height=%2264%22 viewBox=%220 0 64 64%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M8 16c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zm33.414-6l5.95-5.95L45.95.636 40 6.586 34.05.636 32.636 2.05 38.586 8l-5.95 5.95 1.414 1.414L40 9.414l5.95 5.95 1.414-1.414L41.414 8zM40 48c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm0-2c3.314 0 6-2.686 6-6s-2.686-6-6-6-6 2.686-6 6 2.686 6 6 6zM9.414 40l5.95-5.95-1.414-1.414L8 38.586l-5.95-5.95L.636 34.05 6.586 40l-5.95 5.95 1.414 1.414L8 41.414l5.95 5.95 1.414-1.414L9.414 40z%22 fill=%22%23c9bfae%22 fill-opacity=%221%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E");
 
     color-scheme: light;
@@ -33,10 +54,8 @@
     --text-color: #e6edf3;
     --text-muted: #9ea7b3;
     --link-color: #6cb2ff;
-    --shadow-color: rgba(0, 0, 0, 0.6);
     --hover-bg: rgba(255, 255, 255, 0.08);
     --active-bg: rgba(255, 255, 255, 0.14);
-    --divider-color: rgba(255, 255, 255, 0.22);
     --grain-opacity: 0.045;
     --grain-blend: screen;
 
@@ -54,8 +73,13 @@
     color-scheme: dark;
 }
 
-/* ===== Page ===== */
-* { box-sizing: border-box; }
+/* ==========================================================================
+   2. Base
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
 
 html {
     background-color: var(--bg-color);
@@ -66,55 +90,78 @@ html {
 
 body {
     margin: 0;
-    font-family: 'Noto Sans', sans-serif;
+    font-family: 'Noto Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     color: var(--text-color);
     -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-a { color: inherit; text-decoration: none; }
+a {
+    color: inherit;
+    text-decoration: none;
+}
 
-/* ===== Stage =====
-   Centres the card in the viewport. The card itself is sized in
-   physical millimetres (see .card) and scaled by --scale, which
-   js/card.js computes so the card always fits the stage. */
+/* ==========================================================================
+   3. Stage and card scene
+   ========================================================================== */
+
 .stage {
     min-height: 100vh;
-    min-height: 100svh; /* stable: ignores the mobile address bar sliding away */
+    min-height: 100svh; /* svh: stable, ignores the mobile address bar sliding away */
     display: grid;
     place-items: center;
-    padding: 16px;
+    padding: 16px; /* keep in sync with GUTTER in js/card.js */
     overflow: hidden;
 }
 
-/* ===== Business card =====
-   Australian standard: 90 x 55 mm. Everything inside is sized in `em`
-   where 1em = 1mm * --scale, so the whole card scales as one piece.
-   Change --card-w / --card-h to support another card size later. */
+/*
+ * The scene is the never-moving box around the card: it centres it, holds the
+ * perspective and receives the presses. Its size is the card's size in the
+ * current orientation. To support another card size, change --card-w and
+ * --card-h here and CARD_W / CARD_H in js/card.js.
+ */
 .card-scene {
-    opacity: 0; /* revealed by js/card.js after the first layout (no flash) */
-    --card-w: 90;
-    --card-h: 55;
-    --scale: 2;
+    --card-w: 90;   /* mm, Australian standard business card */
+    --card-h: 55;   /* mm */
+    --card-radius: 2.5em;
+    --scale: 2;     /* set by js/card.js; 2 = double real size */
+    --qr: 14;       /* QR size in em (see the stamp section) */
+
+    opacity: 0;     /* revealed by js/card.js after the first layout (no flash) */
     font-size: calc(1mm * var(--scale));
     perspective: 240em;
     width: calc(var(--card-w) * 1em);
     height: calc(var(--card-h) * 1em);
 }
-.card-scene.is-ready { opacity: 1; transition: opacity 0.2s ease; }
+
 .card-scene[data-orient="portrait"] {
+    --qr: 20.8;
     width: calc(var(--card-h) * 1em);
     height: calc(var(--card-w) * 1em);
 }
 
+.card-scene.is-ready {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+
+/* ==========================================================================
+   4. Card body and paper face
+   ========================================================================== */
+
+/*
+ * .card is what tilts (on press) and turns (easter egg). JS sets --rx, --ry
+ * and --ps while a press is held; the turn itself is a Web Animation.
+ */
 .card {
     position: relative;
     width: 100%;
     height: 100%;
-    /* Own compositor layer from the start, so the tilt and the turn are
-       rasterised once at full resolution and just transformed (no hitch or
-       soft/jagged frames when the animation begins; matters most on mobile). */
+    /* Own compositor layer from the start: the tilt and the turn are
+       rasterised once at full resolution and only transformed afterwards
+       (no hitch or soft frames when an animation begins; matters on mobile). */
     will-change: transform;
-    /* Press tilt: JS sets --rx/--ry/--ps from where the card is pressed */
     transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--ps, 1));
     transition: transform 0.55s cubic-bezier(.3, 1.6, .5, 1); /* springy release */
     cursor: default;
@@ -123,25 +170,28 @@ a { color: inherit; text-decoration: none; }
     touch-action: manipulation; /* keep pan / pinch / pull-to-refresh; only double-tap zoom is off */
     -webkit-tap-highlight-color: transparent;
 }
+
 .card.is-pressed {
     transition: transform 0.12s ease-out; /* quick, firm press */
 }
-/* While the card turns, no CSS transition may run underneath the turn
-   animation (a spring-back finishing after it looked like the turn replaying) */
+
+/* While the card turns, no CSS transition may run underneath the animation:
+   a spring-back finishing after it looked like the turn playing again. */
 .card-scene.is-turning .card,
-.card-scene.is-turning .card.is-pressed { transition: none; }
-/* A transparent 1px outline makes browsers anti-alias the edges of the
-   rotating face (otherwise they look jagged while turned). */
-.card-scene.is-turning .face { outline: 1px solid transparent; }
+.card-scene.is-turning .card.is-pressed {
+    transition: none;
+}
+
+/* A transparent 1px outline makes browsers anti-alias the edges of the face
+   while it is rotated (they look jagged otherwise). */
+.card-scene.is-turning .face {
+    outline: 1px solid transparent;
+}
 
 .face {
     position: absolute;
     inset: 0;
-    display: flex;
-    flex-direction: column;
-    padding: 5em;
-    border-radius: 2.5em; /* rounded-corner stock; use 0 for square cut */
-    /* Translucent paper: tint, a faint diagonal sheen and a lit rim. */
+    border-radius: var(--card-radius);
     background: var(--card-sheen), var(--card-bg);
     border: 0.15em solid var(--card-edge);
     box-shadow: var(--card-shadow), var(--card-rim);
@@ -149,22 +199,28 @@ a { color: inherit; text-decoration: none; }
     -webkit-backface-visibility: hidden;
     overflow: hidden;
     isolation: isolate;
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* Paper grain */
+/* Paper grain: a tiled feTurbulence noise image behind the content */
 .face::after {
     content: "";
     position: absolute;
     inset: 0;
+    z-index: -1;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.45' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-size: 200px 200px;
     opacity: var(--grain-opacity);
     mix-blend-mode: var(--grain-blend);
     pointer-events: none;
-    z-index: -1;
 }
 
-/* ----- Front ----- */
+/* ==========================================================================
+   5. Content
+   ========================================================================== */
+
+/* ----- Text ----- */
+
 .name {
     margin: 0;
     font-size: 5.4em;
@@ -173,6 +229,7 @@ a { color: inherit; text-decoration: none; }
     letter-spacing: -0.01em;
     text-wrap: balance;
 }
+
 .role {
     margin: 1.4em 0 0;
     font-size: 2.6em;
@@ -180,6 +237,7 @@ a { color: inherit; text-decoration: none; }
     font-weight: 700;
     color: var(--link-color);
 }
+
 .focus {
     margin: 0.6em 0 0;
     font-size: 2.3em;
@@ -187,21 +245,21 @@ a { color: inherit; text-decoration: none; }
     color: var(--text-muted);
 }
 
-/* QR code as a postage stamp: 40 perforation holes centred on the edges (10
-   per side, 100-unit viewBox) so all four sides are identical. --qr = QR
-   size in em; the stamp is that plus 1em of paper on each side. */
-.card-scene { --qr: 14; }
+/* ----- QR code as a postage stamp -----
+   .stamp is the paper body (an inline SVG in index.html: one shape with 40
+   perforation holes centred on its edges, plus two offset copies as shadow).
+   It is vector so the perforations are pixel-identical in every browser; CSS
+   gradient tiles were rounded differently by iOS Safari and left a stray strip
+   of paper. --qr is the QR size in em; the stamp adds 1em of paper per side. */
+
 .qr {
-    --t: calc((var(--qr) + 2) * 0.1em);
-    flex: none;
+    position: relative;
     display: block;
+    flex: none;
     padding: 1em;
     line-height: 0;
-    position: relative;
 }
-/* The stamp body is an inline SVG (see index.html): a vector shape, so the
-   perforations are pixel-identical on every browser. CSS gradient tiles were
-   rounded differently by iOS Safari, which left a stray strip of paper. */
+
 .stamp {
     position: absolute;
     inset: 0;
@@ -210,81 +268,130 @@ a { color: inherit; text-decoration: none; }
     overflow: visible; /* the shadow copies spill past the box */
     pointer-events: none;
 }
-.qr-inner {
-    position: relative; /* paints above the .stamp svg */
+
+.qr-code {
+    position: relative; /* paints above .stamp */
     display: block;
     width: calc(var(--qr) * 1em);
     height: calc(var(--qr) * 1em);
     padding: 0.7em;
     background: #fff;
 }
-/* Vector QR: sharp at any scale. Anti-aliased (not crispEdges): crispEdges
-   snaps every module to whole pixels, which made the code shimmer/shift by
-   a pixel whenever the card tilted or turned. Modules are one path, so
-   there are no seams between them. */
-.qr-inner svg { display: block; width: 100%; height: 100%; shape-rendering: geometricPrecision; }
+
+/* Anti-aliased, not crispEdges: crispEdges snaps every module to whole pixels,
+   which made the code shimmer by a pixel whenever the card tilted or turned.
+   The modules are one path, so there are no seams between them. */
+.qr-code svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    shape-rendering: geometricPrecision;
+}
+
+/* ----- Social links -----
+   The link box never moves: only the icon inside lifts. If the hit box moved
+   with the icon, a pointer near its bottom edge would fall off it on hover and
+   the link would flicker / be hard to click. The padding adds a generous,
+   stable hit area (the negative margin keeps the layout unchanged). */
 
 .social-links {
     display: flex;
     align-items: center;
     gap: 3em;
 }
-/* The link itself never moves: only the icon inside lifts. If the hit box
-   moved with the icon, the pointer near its bottom edge would fall off it
-   on hover and the link would flicker / be hard to click. The padding adds
-   a generous, stable hit area (the negative margin keeps the layout). */
+
 .social-links a {
-    color: var(--text-color);
-    font-size: 4.2em;
-    line-height: 1;
     display: block;
     padding: 0.3em;
     margin: -0.3em;
+    font-size: 4.2em;
+    line-height: 1;
+    color: var(--text-color);
     transition: opacity 0.18s ease;
 }
-.social-links a > i,
-.social-links a > img {
+
+.social-links svg,
+.social-links img {
     display: block;
+    height: 1em;
     transition: transform 0.18s ease;
 }
-.social-links img { width: 1em; height: 1em; }
-:root[data-theme="dark"] .social-links img { filter: invert(1); }
+
+.social-links svg {
+    width: auto;
+    position: relative;
+    top: -0.03em; /* sits where the old icon-font glyphs sat (1px at 2x) */
+}
+
+.social-links img { width: 1em; }
+
+:root[data-theme="dark"] .social-links img { filter: invert(1); } /* the IMDb mark is black */
+
+/* Press feedback (transient, so it can never stick on touch screens) */
 .social-links a:active { opacity: 0.55; }
-.social-links a:active > i,
-.social-links a:active > img { transform: translateY(-0.12em); }
+.social-links a:active svg,
+.social-links a:active img { transform: translateY(-0.12em); }
+
+/* Hover only for real mice: touch browsers keep :hover on the tapped element */
 @media (hover: hover) {
     .social-links a:hover { opacity: 0.55; }
-    .social-links a:hover > i,
-    .social-links a:hover > img { transform: translateY(-0.12em); }
+    .social-links a:hover svg,
+    .social-links a:hover img { transform: translateY(-0.12em); }
 }
+
+/* After a click the link keeps :focus; reset it visually, keyboards keep a ring */
 .social-links a:focus:not(:focus-visible):not(:active) {
-    opacity: 1; outline: none;
+    opacity: 1;
+    outline: none;
 }
-.social-links a:focus:not(:focus-visible):not(:active):not(:hover) > i,
-.social-links a:focus:not(:focus-visible):not(:active):not(:hover) > img {
+
+.social-links a:focus:not(:focus-visible):not(:active):not(:hover) svg,
+.social-links a:focus:not(:focus-visible):not(:active):not(:hover) img {
     transform: none;
 }
+
 .social-links a:focus-visible {
     outline: 0.3em solid var(--link-color);
     outline-offset: 0.5em;
     border-radius: 0.6em;
 }
 
-/* Landscape front: text left, links bottom-left, QR bottom-right */
+/* ==========================================================================
+   6. Layouts
+   ========================================================================== */
+
+/* Landscape: text top-left (nudged down to look centred), links bottom-left,
+   QR stamp bottom-right. */
 .card-scene[data-orient="landscape"] .face {
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 1fr auto;
     column-gap: 4em;
+    padding: 5em;
 }
-.card-scene[data-orient="landscape"] .id-block { grid-column: 1; grid-row: 1; }
-.card-scene[data-orient="landscape"] .social-links { grid-column: 1; grid-row: 2; align-self: end; }
-.card-scene[data-orient="landscape"] .qr { grid-column: 2; grid-row: 1 / 3; align-self: end; }
 
-/* Portrait front: one tight group (text, QR stamp, links) centred in the
-   space below the toggle. The stamp is (--qr + 2em of border) wide. It was
-   23.8 (as wide as the links row, 25.8em); now a little smaller. */
-.card-scene[data-orient="portrait"] { --qr: 20.8; }
+.card-scene[data-orient="landscape"] .id-block {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 6em 5em 0 0; /* top: optical centring; right: clear of the toggle */
+}
+
+.card-scene[data-orient="landscape"] .name { font-size: 4.9em; }
+
+.card-scene[data-orient="landscape"] .social-links {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+}
+
+.card-scene[data-orient="landscape"] .qr {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: end;
+}
+
+/* Portrait: one tight group (text, QR stamp, links), centred in the space
+   below the toggle. Each text line stays on one line. */
 .card-scene[data-orient="portrait"] .face {
     display: grid;
     grid-template-columns: 1fr;
@@ -293,61 +400,78 @@ a { color: inherit; text-decoration: none; }
     row-gap: 6em;
     padding: 9em 4.5em 5em;
 }
+
 .card-scene[data-orient="portrait"] .id-block { grid-row: 1; }
 .card-scene[data-orient="portrait"] .qr { grid-row: 2; justify-self: center; }
 .card-scene[data-orient="portrait"] .social-links { grid-row: 3; justify-self: center; }
-.card-scene[data-orient="portrait"] .name { font-size: 4.3em; white-space: nowrap; }
-.card-scene[data-orient="portrait"] .role { font-size: 2.05em; white-space: nowrap; }
+
+.card-scene[data-orient="portrait"] .name  { font-size: 4.3em;  white-space: nowrap; }
+.card-scene[data-orient="portrait"] .role  { font-size: 2.05em; white-space: nowrap; }
 .card-scene[data-orient="portrait"] .focus { font-size: 1.85em; white-space: nowrap; }
 
-/* ===== Theme toggle (floating) ===== */
+/* ==========================================================================
+   7. Theme toggle (top-right corner of the card)
+   ========================================================================== */
+
 .theme-toggle {
-    /* Buttons don't inherit font-size by default (UA sets ~13px), which
-       broke every em below when the card scaled: inherit the card's unit. */
+    /* Buttons don't inherit font-size (the UA sets ~13px), which would break
+       every em below when the card scales: inherit the card's unit. */
     font: inherit;
     font-size: inherit;
+
     position: absolute;
-    /* Icon is centred in the 4em box, so the visible gap to the card's
-       top and right edges is 2.4 + (5 - 3.2)/2 = 3.3em on both sides. */
+    /* The icon is centred in the 5em box, so its visible gap to the card's
+       top and right edges is 2.4 + (5 - 3.2) / 2 = 3.3em on both sides. */
     top: 2.4em;
     right: 2.4em;
-    width: 5em;
-    height: 5em;
+    z-index: 1;
     display: grid;
     place-items: center;
+    width: 5em;
+    height: 5em;
+    padding: 0;
+    border: 0;
     border-radius: 50%;
     background: transparent;
-    border: 0;
-    padding: 0;
     color: var(--text-color);
     cursor: pointer;
-    z-index: 1;
     -webkit-tap-highlight-color: transparent;
     transition: background-color 0.18s ease;
 }
+
 .theme-toggle:active { background-color: var(--active-bg); }
+
 @media (hover: hover) {
     .theme-toggle:hover { background-color: var(--hover-bg); }
 }
+
 .theme-toggle:focus-visible {
     outline: 2px solid var(--link-color);
     outline-offset: 2px;
 }
+
+/* The artwork is black. The solid half always shows the theme you would
+   switch TO, so the icon turns half a revolution in dark mode. */
 .theme-icon {
+    display: block;
     width: 3.2em;
     height: 3.2em;
-    display: block;
     transition: transform 0.3s ease;
 }
-:root[data-theme="dark"] .theme-icon { filter: invert(1); }
 
-/* Smooth theme change */
-.face, body { transition: background-color 0.25s ease, color 0.25s ease; }
-
-@media (prefers-reduced-motion: reduce) {
-    .card { transition: none; }
+:root[data-theme="dark"] .theme-icon {
+    transform: rotate(180deg);
+    filter: invert(1);
 }
 
-/* Keep the name clear of the on-card theme toggle */
-.card-scene[data-orient="landscape"] .id-block { padding-right: 5em; padding-top: 6em; }
-.card-scene[data-orient="landscape"] .name { font-size: 4.9em; }
+/* ==========================================================================
+   8. Reduced motion (js/card.js also skips the turn animation)
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

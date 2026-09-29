@@ -1,1 +1,12 @@
+# OS
 .DS_Store
+Thumbs.db
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# Node (only used for the dev scripts in tools/)
+node_modules/
+npm-debug.log*

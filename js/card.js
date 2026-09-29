@@ -1,282 +1,328 @@
-// Business-card layout: orientation + scale to fit the screen, QR code,
-// and the rapid-click easter egg (swaps the card's orientation).
+/**
+ * Business card behaviour. See docs/ARCHITECTURE.md for the design notes.
+ *
+ *   1. Fitting     pick landscape or portrait and a scale that fit the screen
+ *   2. Press tilt  the card dips toward wherever it is pressed
+ *   3. Turn        three quick presses in one spot turn the card to the other
+ *                  orientation (easter egg)
+ *
+ * Plain script (no modules), so the page also works when opened from disk.
+ */
 (function () {
+    'use strict';
+
+    // ------------------------------------------------------------------ config
+
+    // Physical card size in mm. Keep in sync with --card-w / --card-h in the CSS.
+    const CARD_W = 90;
+    const CARD_H = 55;
+
+    const MAX_SCALE = 2;   // largest scale the card is drawn at (2 = double real size)
+    const MIN_SCALE = 0.05;
+    const GUTTER = 16;     // px kept clear around the card; matches .stage padding
+
+    // Press tilt
+    const TILT_DEG = 6;         // tilt at the very edge of the card
+    const PRESS_SCALE = 0.985;  // the card sinks slightly while pressed
+    const MIN_HOLD_MS = 150;    // a quick tap still shows a clear dip
+    const DEDUPE_MS = 40;       // ignore duplicate pointerdown events closer than this
+
+    // Turn easter egg
+    const PRESSES_TO_TURN = 3;
+    const PRESS_WINDOW_MS = 2000;
+    const ZONE_EDGE = 0.4;      // the card is a 3x3 grid; presses must stay in one cell
+
+    // Turn animation. Add ?slow to the URL to play it 8x slower (for debugging).
+    const SLOW = /[?&]slow\b/.test(window.location.search) ? 8 : 1;
+    const TURN_MS = 760 * SLOW;
+    const EDGE_ON_DEG = 89.5;   // 90 exactly is a singular matrix; some mobile engines cull it
+    const SWAP_AT = 0.49;       // layout swap time, as a fraction of the turn ...
+    const FADE_OUT_FROM = 0.40; // ... which lies inside the fully transparent window
+    const FADE_OUT_TO = 0.485;  //     [FADE_OUT_TO, FADE_IN_FROM]
+    const FADE_IN_FROM = 0.515;
+    const FADE_IN_TO = 0.60;
+    // The two easing curves meet with the same slope (0.8), so the card keeps
+    // moving through edge-on instead of dwelling there.
+    const EASE_IN_HALF = 'cubic-bezier(.4, 0, .7, .76)';
+    const EASE_OUT_HALF = 'cubic-bezier(.25, .2, .3, 1)';
+
+    // ------------------------------------------------------------------- state
+
     const scene = document.getElementById('scene');
     const card = document.getElementById('card');
 
-    // Physical card size in mm (keep in sync with --card-w/--card-h in CSS).
-    const CARD_W = 90;
-    const CARD_H = 55;
-    const MAX_SCALE = 2;      // largest scale (2 = double real size)
-    const GUTTER = 16;        // px kept clear around the card (matches .stage padding)
+    let swapped = false;          // easter egg: show the pose the screen would NOT choose
+    let turning = false;          // a turn animation is running
+    let pressAxis = [0, 1];       // rotation axis of the latest press: sets the turn direction
+    let pressedAt = 0;
+    let releaseTimer = 0;
+    let lastPointerDownAt = 0;
+    let recentPresses = [];       // timestamps of presses in the current zone
+    let lastZone = '';
 
-    // Easter egg: this many clicks/taps within WINDOW ms.
-    const CLICKS_NEEDED = 3;
-    const WINDOW = 2000;
+    const prefersReducedMotion = () =>
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    let swapped = false;   // easter egg: manual orientation override
+    // ----------------------------------------------------------------- fitting
 
-    // Measure how many CSS px a real millimetre is on this device.
-    function pxPerMm() {
-        const probe = document.createElement('div');
-        probe.style.cssText = 'position:absolute;visibility:hidden;width:100mm;height:0';
-        document.body.appendChild(probe);
-        const px = probe.getBoundingClientRect().width / 100;
-        probe.remove();
-        return px || 96 / 25.4;
+    /*
+     * Two hidden probes measure the environment once:
+     *  - a 100mm-wide box gives the device's real px-per-mm;
+     *  - a box 100svh tall gives the viewport height with the mobile address bar
+     *    shown. It never changes when the bar slides away, unlike innerHeight,
+     *    which would flip the pose/scale back and forth during use.
+     */
+    const mmProbe = createProbe('width:100mm;height:0');
+    const svhProbe = createProbe('width:0;height:100svh');
+
+    function createProbe(css) {
+        const el = document.createElement('div');
+        el.style.cssText = `position:fixed;left:0;top:0;visibility:hidden;pointer-events:none;${css}`;
+        document.body.appendChild(el);
+        return el;
     }
 
-    // Viewport size used for fitting. On mobile the address bar slides in and
-    // out, which changes innerHeight mid-load and mid-use and would flip the
-    // orientation/scale back and forth. 100svh is the "toolbar shown" height
-    // and never changes with it, so the layout stays put.
-    const vpProbe = document.createElement('div');
-    vpProbe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
-    document.body.appendChild(vpProbe);
+    function pxPerMm() {
+        return mmProbe.getBoundingClientRect().width / 100 || 96 / 25.4;
+    }
+
     function viewport() {
-        const svh = vpProbe.getBoundingClientRect().height;
+        const svh = svhProbe.getBoundingClientRect().height;
         return {
-            w: document.documentElement.clientWidth || window.innerWidth,
-            h: svh > 0 ? svh : window.innerHeight
+            width: document.documentElement.clientWidth || window.innerWidth,
+            height: svh > 0 ? svh : window.innerHeight
         };
     }
 
-    // Orientation policy: landscape at max size if it fits, else portrait at
-    // max size, else whichever needs the smaller scale-down.
-    function compute(isSwapped) {
+    /**
+     * Pose policy: landscape at the largest scale if it fits, else portrait at the
+     * largest scale, else whichever needs the smaller shrink (ties favour landscape).
+     * @param {boolean} flipped  true = the opposite pose (easter egg)
+     * @returns {{orient: 'landscape'|'portrait', scale: number}}
+     */
+    function computePose(flipped) {
         const mm = pxPerMm();
         const vp = viewport();
-        const availW = vp.w - GUTTER * 2;
-        const availH = vp.h - GUTTER * 2;
-
+        const availW = vp.width - GUTTER * 2;
+        const availH = vp.height - GUTTER * 2;
         const fit = (w, h) => Math.min(availW / (w * mm), availH / (h * mm), MAX_SCALE);
-        const land = fit(CARD_W, CARD_H);
-        const port = fit(CARD_H, CARD_W);
 
-        let orient = land >= port * 0.98 ? 'landscape' : 'portrait'; // ties favour landscape
-        if (land >= MAX_SCALE) orient = 'landscape';
-        else if (port >= MAX_SCALE) orient = 'portrait';
+        const landscape = fit(CARD_W, CARD_H);
+        const portrait = fit(CARD_H, CARD_W);
 
-        // Easter egg: show the same card in the other orientation.
-        if (isSwapped) orient = orient === 'landscape' ? 'portrait' : 'landscape';
+        let orient;
+        if (landscape >= MAX_SCALE) orient = 'landscape';
+        else if (portrait >= MAX_SCALE) orient = 'portrait';
+        else orient = landscape >= portrait * 0.98 ? 'landscape' : 'portrait';
 
-        const scale = Math.max(0.05, orient === 'landscape' ? land : port);
-        const heightPx = (orient === 'landscape' ? CARD_H : CARD_W) * mm * scale;
-        return { orient, scale, heightPx };
+        if (flipped) orient = orient === 'landscape' ? 'portrait' : 'landscape';
+
+        const scale = orient === 'landscape' ? landscape : portrait;
+        return { orient, scale: Math.max(MIN_SCALE, scale) };
     }
 
+    /** Applies the current pose to the DOM (writes only what changed). */
     function layout() {
-        const { orient, scale } = compute(swapped);
+        const { orient, scale } = computePose(swapped);
         if (scene.dataset.orient !== orient) scene.dataset.orient = orient;
-        const v = scale.toFixed(4);
-        if (scene.style.getPropertyValue('--scale') !== v) scene.style.setProperty('--scale', v);
+        const value = scale.toFixed(4);
+        if (scene.style.getPropertyValue('--scale') !== value) scene.style.setProperty('--scale', value);
     }
 
-    // Coalesce bursts of resize events (mobile fires many) into one layout,
-    // and skip the turn animation's own layout swap being interleaved.
-    let rafId = 0;
+    // Mobile fires bursts of resize events: coalesce them into one layout per frame.
+    let layoutFrame = 0;
     function scheduleLayout() {
-        if (rafId) return;
-        rafId = requestAnimationFrame(() => { rafId = 0; if (!turning) layout(); });
-    }
-
-    // Vector QR (SVG): crisp at any scale or 3D angle. A raster canvas scaled
-    // down by CSS was the cause of the occasional blur. Built on window load:
-    // the QR library comes from a CDN and must not delay the first layout.
-    function qrSvg(text) {
-        const tmp = document.createElement('div');
-        const q = new QRCode(tmp, {
-            text, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.M
+        if (layoutFrame) return;
+        layoutFrame = requestAnimationFrame(() => {
+            layoutFrame = 0;
+            if (!turning) layout();
         });
-        const m = q._oQRCode;
-        const n = m.getModuleCount();
-        let d = '';
-        for (let r = 0; r < n; r++) {
-            for (let c = 0; c < n; c++) {
-                if (m.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-            }
-        }
-        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" ` +
-            `shape-rendering="geometricPrecision" role="img" aria-label="QR code">` +
-            `<path d="${d}" fill="#2C2825"/></svg>`;
-    }
-    function buildQR() {
-        const qrHost = document.getElementById('qr');
-        if (!window.QRCode || !qrHost || qrHost.childElementCount) return;
-        qrHost.innerHTML = qrSvg('https://haodong.page');
-    }
-    buildQR();
-    window.addEventListener('load', buildQR);
-
-    // Rapid-click detector. Listens on the (never-tilted) scene and counts
-    // on pointerdown, so a card that dips out from under the pointer can
-    // never swallow a click. Ignores presses on links/buttons.
-    // A press in a different area (3x3 grid: left/centre/right x top/middle/
-    // bottom) than the previous one restarts the count, so left-right-top
-    // presses can't add up to a flip.
-    let clicks = [];
-    let lastZone = '';
-    function countPress(e, nx, ny) {
-        if (e.target.closest('a, button')) { clicks = []; lastZone = ''; return false; }
-        const q = (v) => (v < -0.4 ? -1 : v > 0.4 ? 1 : 0);
-        const zone = q(nx) + ',' + q(ny);
-        const now = Date.now();
-        if (zone !== lastZone) clicks = [];
-        lastZone = zone;
-        clicks = clicks.filter((t) => now - t <= WINDOW);
-        clicks.push(now);
-        if (clicks.length >= CLICKS_NEEDED) {
-            clicks = [];
-            return true;
-        }
-        return false;
     }
 
-    // Turn the card over like a real one: rotate to edge-on, swap the
-    // layout while it is invisible (a hairline), then rotate the rest of the
-    // way. Nothing on the face is ever stretched while it is visible.
-    // Add ?slow to the URL to play the turn 8x slower (for debugging).
-    const SLOW = /[?&]slow\b/.test(window.location.search) ? 8 : 1;
-    const TURN_MS = 760 * SLOW;
-    let turning = false;
-    function turnCard() {
-        if (turning) return;
-        const [ax, ay] = pressAxis; // spin the way the card was pushed
-        const axis = `${ax.toFixed(3)}, ${ay.toFixed(3)}, 0`;
-        if (!card.animate || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            swapped = !swapped;
-            layout();
-            return;
-        }
-        turning = true;
-        // Nothing may animate underneath the turn: drop the press tilt right
-        // now (transitions are off while .is-turning), so no spring-back can
-        // finish after the turn and look like it playing again.
-        clearTimeout(releaseTimer);
-        scene.classList.add('is-turning');
+    // -------------------------------------------------------------- press tilt
+
+    /** Normalised pointer position over the scene: -1 (left/top) .. 1 (right/bottom). */
+    function pointerPosition(event) {
+        const rect = scene.getBoundingClientRect(); // stable: the card itself is tilting
+        const clamp = (v) => Math.max(-1, Math.min(1, v));
+        return {
+            nx: clamp(((event.clientX - rect.left) / rect.width - 0.5) * 2),
+            ny: clamp(((event.clientY - rect.top) / rect.height - 0.5) * 2)
+        };
+    }
+
+    /**
+     * The axis a press at (nx, ny) pushes the card around: left/right presses
+     * -> Y axis, top/bottom -> X axis, corners -> diagonal. Near-axis presses
+     * snap to the pure axis; a press in the centre defaults to the Y axis.
+     */
+    function axisFromPress(nx, ny) {
+        let ax = -ny;
+        let ay = nx;
+        if (Math.hypot(ax, ay) < 0.2) return [0, 1];
+        if (Math.abs(ax) < 0.45 * Math.abs(ay)) ax = 0;
+        else if (Math.abs(ay) < 0.45 * Math.abs(ax)) ay = 0;
+        const length = Math.hypot(ax, ay);
+        return [ax / length, ay / length];
+    }
+
+    function tiltCard(nx, ny) {
+        card.style.setProperty('--ry', `${(nx * TILT_DEG).toFixed(2)}deg`);
+        card.style.setProperty('--rx', `${(-ny * TILT_DEG).toFixed(2)}deg`);
+        card.style.setProperty('--ps', String(PRESS_SCALE));
+        card.classList.add('is-pressed');
+    }
+
+    function untiltCard() {
         card.classList.remove('is-pressed');
         card.style.removeProperty('--rx');
         card.style.removeProperty('--ry');
         card.style.removeProperty('--ps');
-        // ONE animation for the whole turn (no cancel / hand-off between two
-        // animations: on mobile that hand-off left a few frames where neither
-        // controlled the card, so the finished flat card flashed and then the
-        // turn seemed to play again). The rotation never pauses: 0 -> edge-on,
-        // a jump to the mirrored edge-on angle, then -> flat. The two easing
-        // curves have the SAME slope where they meet (0.8 of the average
-        // speed), so the card keeps moving through edge-on with no dwell.
-        // 89.5, not 90: an exactly edge-on matrix is singular, which some
-        // mobile engines cull or flicker on.
-        const anim = card.animate([
-            { transform: `rotate3d(${axis}, 0deg)`, easing: 'cubic-bezier(.4, 0, .7, .76)' },
-            { transform: `rotate3d(${axis}, 89.5deg)`, offset: 0.5 },
-            { transform: `rotate3d(${axis}, -89.5deg)`, offset: 0.5, easing: 'cubic-bezier(.25, .2, .3, 1)' },
-            { transform: `rotate3d(${axis}, 0deg)` }
+    }
+
+    /** Springs back after the press, but never sooner than MIN_HOLD_MS. */
+    function releasePress() {
+        clearTimeout(releaseTimer);
+        const wait = Math.max(0, MIN_HOLD_MS - (Date.now() - pressedAt));
+        releaseTimer = setTimeout(untiltCard, wait);
+    }
+
+    // ---------------------------------------------------------- press counting
+
+    /**
+     * Counts rapid presses. Presses on links/buttons never count, and a press in a
+     * different area (3x3 grid) than the previous one restarts the count, so
+     * left-right-top cannot add up to a turn.
+     * @returns {boolean} true when this press completes the sequence
+     */
+    function countPress(event, nx, ny) {
+        if (event.target.closest && event.target.closest('a, button')) {
+            recentPresses = [];
+            lastZone = '';
+            return false;
+        }
+        const cell = (v) => (v < -ZONE_EDGE ? -1 : v > ZONE_EDGE ? 1 : 0);
+        const zone = `${cell(nx)},${cell(ny)}`;
+        const now = Date.now();
+        if (zone !== lastZone) recentPresses = [];
+        lastZone = zone;
+        recentPresses = recentPresses.filter((t) => now - t <= PRESS_WINDOW_MS);
+        recentPresses.push(now);
+        if (recentPresses.length < PRESSES_TO_TURN) return false;
+        recentPresses = [];
+        return true;
+    }
+
+    // -------------------------------------------------------------------- turn
+
+    /**
+     * Turns the card over to the other orientation.
+     *
+     * One continuous animation: rotate to (almost) edge-on, jump to the mirrored
+     * edge-on angle, rotate on to flat. There is no hand-off between animations
+     * (on mobile that left frames where nothing controlled the card). A second
+     * animation started in the same call fades the card out as it thins toward
+     * edge-on and back in as it opens; it is fully transparent around the
+     * midpoint, which is when the layout is swapped, so the swap is never seen.
+     */
+    function turnCard() {
+        if (turning) return;
+
+        if (!card.animate || prefersReducedMotion()) {
+            swapped = !swapped;
+            layout();
+            return;
+        }
+
+        turning = true;
+        // Nothing may animate underneath the turn: drop the press tilt now
+        // (transitions are off while .is-turning).
+        clearTimeout(releaseTimer);
+        scene.classList.add('is-turning');
+        untiltCard();
+
+        const [ax, ay] = pressAxis; // spin the way the card was pushed
+        const rotation = (deg) => `rotate3d(${ax.toFixed(3)}, ${ay.toFixed(3)}, 0, ${deg}deg)`;
+
+        const spin = card.animate([
+            { transform: rotation(0), easing: EASE_IN_HALF },
+            { transform: rotation(EDGE_ON_DEG), offset: 0.5 },
+            { transform: rotation(-EDGE_ON_DEG), offset: 0.5, easing: EASE_OUT_HALF },
+            { transform: rotation(0) }
         ], { duration: TURN_MS });
 
-        // Morph instead of pause: the old design fades out as the card thins
-        // toward edge-on and the new design fades in as it opens again. The
-        // card is fully transparent for a short window around the midpoint,
-        // which is when the layout is swapped, so the swap is never seen.
-        // (A second animation started in the same call: no hand-off gap.)
         card.animate([
             { opacity: 1, offset: 0 },
-            { opacity: 1, offset: 0.40 },
-            { opacity: 0, offset: 0.485 },
-            { opacity: 0, offset: 0.515 },
-            { opacity: 1, offset: 0.60 },
+            { opacity: 1, offset: FADE_OUT_FROM },
+            { opacity: 0, offset: FADE_OUT_TO },
+            { opacity: 0, offset: FADE_IN_FROM },
+            { opacity: 1, offset: FADE_IN_TO },
             { opacity: 1, offset: 1 }
         ], { duration: TURN_MS, easing: 'linear' });
 
-        // Swap the layout inside the transparent window. Driven by the
-        // animation's own clock (not a timer); a timeout is only a safety net
-        // for throttled/background tabs.
-        const SWAP_AT = TURN_MS * 0.49; // window is 0.485 - 0.515
-        let swappedYet = false; // must run exactly once, whatever the engine does
-        const doSwap = () => {
-            if (swappedYet) return;
-            swappedYet = true;
+        // Swap the layout exactly once, driven by the animation's own clock.
+        // The timeout is only a safety net for throttled / background tabs.
+        let swapDone = false;
+        const swapLayout = () => {
+            if (swapDone) return;
+            swapDone = true;
             swapped = !swapped;
             layout();
         };
-        const watch = () => {
-            if (swappedYet) return;
-            const t = anim.currentTime;
-            if (t !== null && Number(t) >= SWAP_AT) doSwap();
-            else requestAnimationFrame(watch);
+        const watchClock = () => {
+            if (swapDone) return;
+            const t = spin.currentTime;
+            if (t !== null && Number(t) >= TURN_MS * SWAP_AT) swapLayout();
+            else requestAnimationFrame(watchClock);
         };
-        requestAnimationFrame(watch);
-        setTimeout(doSwap, TURN_MS * 0.53 + 120 * SLOW);
+        requestAnimationFrame(watchClock);
+        setTimeout(swapLayout, TURN_MS * 0.53 + 120 * SLOW);
 
-        let done = false;
+        let finished = false;
         const finish = () => {
-            if (done) return;
-            done = true;
-            doSwap(); // in case the turn was interrupted before the swap
+            if (finished) return;
+            finished = true;
+            swapLayout(); // in case the turn was interrupted before the swap
             // Let the rest pose settle for a frame before transitions return.
             requestAnimationFrame(() => {
                 scene.classList.remove('is-turning');
                 turning = false;
             });
         };
-        anim.onfinish = finish;
-        anim.oncancel = finish;
+        spin.onfinish = finish;
+        spin.oncancel = finish;
     }
 
-    // Press tilt: the card dips toward wherever it is pressed, then springs
-    // back. Held for a minimum time so even a quick tap is clearly visible.
-    const TILT = 6;        // degrees at the very edge (subtle)
-    const MIN_HOLD = 150;  // ms
-    let pressedAt = 0;
-    let pressAxis = [0, 1];  // rotation axis of the last press (sets flip direction)
-    let releaseTimer = null;
-    let lastDownAt = 0;
-    scene.addEventListener('pointerdown', (e) => {
-        // One press = one count: ignore secondary pointers and duplicate events
-        if (e.isPrimary === false) return;
-        if (e.timeStamp - lastDownAt < 40) return;
-        lastDownAt = e.timeStamp;
-        const r = scene.getBoundingClientRect(); // stable: the card itself is tilting
-        const cl = (v) => Math.max(-1, Math.min(1, v));
-        const nx = cl(((e.clientX - r.left) / r.width - 0.5) * 2);
-        const ny = cl(((e.clientY - r.top) / r.height - 0.5) * 2);
-        const flip = countPress(e, nx, ny);
+    // ------------------------------------------------------------ pointer input
+
+    // The scene never moves, so presses on it are reliable even while the card
+    // tilts away from under the pointer. Counting happens on pointerdown.
+    scene.addEventListener('pointerdown', (event) => {
+        // One press = one count: ignore secondary pointers and duplicate events.
+        if (event.isPrimary === false) return;
+        if (event.timeStamp - lastPointerDownAt < DEDUPE_MS) return;
+        lastPointerDownAt = event.timeStamp;
+
+        const { nx, ny } = pointerPosition(event);
+        const completesTurn = countPress(event, nx, ny);
         if (turning) return;
+
         clearTimeout(releaseTimer);
-        // Axis the pressed point pushes around: right/left -> Y, top/bottom -> X,
-        // corners -> diagonal. Snap near-axis presses; centre defaults to Y.
-        let vx = -ny, vy = nx;
-        const len = Math.hypot(vx, vy);
-        if (len < 0.2) { vx = 0; vy = 1; }
-        else {
-            if (Math.abs(vx) < 0.45 * Math.abs(vy)) vx = 0;
-            else if (Math.abs(vy) < 0.45 * Math.abs(vx)) vy = 0;
-            const n = Math.hypot(vx, vy);
-            vx /= n; vy /= n;
-        }
-        pressAxis = [vx, vy];
-        card.style.setProperty('--ry', (nx * TILT).toFixed(2) + 'deg');
-        card.style.setProperty('--rx', (-ny * TILT).toFixed(2) + 'deg');
-        card.style.setProperty('--ps', '0.985');
-        card.classList.add('is-pressed');
+        pressAxis = axisFromPress(nx, ny);
+        tiltCard(nx, ny);
         pressedAt = Date.now();
-        if (flip) turnCard();
+        if (completesTurn) turnCard();
     });
-    const release = () => {
-        clearTimeout(releaseTimer);
-        const wait = Math.max(0, MIN_HOLD - (Date.now() - pressedAt));
-        releaseTimer = setTimeout(() => {
-            card.classList.remove('is-pressed');
-            card.style.removeProperty('--rx');
-            card.style.removeProperty('--ry');
-            card.style.removeProperty('--ps');
-        }, wait);
-    };
-    ['pointerup', 'pointercancel'].forEach((t) => scene.addEventListener(t, release));
-    document.addEventListener('pointerup', release);
+
+    scene.addEventListener('pointerup', releasePress);
+    scene.addEventListener('pointercancel', releasePress);
+    document.addEventListener('pointerup', releasePress); // released outside the scene
+
+    // -------------------------------------------------------------------- start
 
     window.addEventListener('resize', scheduleLayout);
     window.addEventListener('orientationchange', scheduleLayout);
+
     layout();
     scene.classList.add('is-ready');
 })();

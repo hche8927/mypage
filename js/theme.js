@@ -1,31 +1,51 @@
-// Dark mode toggle (mobile toggle in brand + desktop toggle in menu)
+/**
+ * Light / dark theme toggle.
+ *
+ * The saved theme is applied before first paint by the inline script in
+ * index.html (to avoid a flash); this file keeps the buttons in sync with it and
+ * handles clicks. Keep STORAGE_KEY and DEFAULT_THEME in sync with that script.
+ * The icon's half-turn and colour inversion are pure CSS (see css/styles.css).
+ */
 (function () {
-    const toggles = document.querySelectorAll('.theme-toggle');
-    const icons = document.querySelectorAll('.theme-icon');
+    'use strict';
 
-    function applyTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        // Rotate the contrast icon: the solid half shows the theme you'll switch TO.
-        // (Icon color adapts automatically via CSS filter on [data-theme=dark].)
-        icons.forEach(icon => {
-            icon.style.transform = theme === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
-        });
+    const STORAGE_KEY = 'theme';
+    const DEFAULT_THEME = 'light';
+    const THEME_COLOR = { light: '#F5EFE4', dark: '#0d1117' }; // <meta name="theme-color">
+
+    const root = document.documentElement;
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    const toggles = document.querySelectorAll('.theme-toggle');
+
+    function loadTheme() {
+        try {
+            return localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME;
+        } catch (err) {
+            return DEFAULT_THEME; // storage blocked (private mode, strict settings)
+        }
     }
 
-    // Sync icon with current theme (set inline in <head>)
-    const current = document.documentElement.getAttribute('data-theme') || 'light';
-    icons.forEach(icon => {
-        icon.style.transform = current === 'dark' ? 'rotate(180deg)' : 'rotate(0deg)';
-    });
+    function saveTheme(theme) {
+        try {
+            localStorage.setItem(STORAGE_KEY, theme);
+        } catch (err) {
+            /* not persisted; the choice still applies to this visit */
+        }
+    }
 
-    toggles.forEach(toggle => {
-        toggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            const next = (document.documentElement.getAttribute('data-theme') === 'dark')
-                ? 'light'
-                : 'dark';
+    function applyTheme(theme) {
+        root.setAttribute('data-theme', theme);
+        if (metaThemeColor) metaThemeColor.setAttribute('content', THEME_COLOR[theme]);
+        toggles.forEach((button) => button.setAttribute('aria-pressed', String(theme === 'dark')));
+    }
+
+    applyTheme(root.getAttribute('data-theme') || loadTheme());
+
+    toggles.forEach((button) => {
+        button.addEventListener('click', () => {
+            const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
             applyTheme(next);
+            saveTheme(next);
         });
     });
 })();

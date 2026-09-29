@@ -1,3 +1,8 @@
+> **Archived.** These are working notes from version 1.0.0 (the classic page with a navbar, hero and About
+> section; Bulma, AOS and Font Awesome). None of that code exists any more; the site is now the business card
+> described in [../ARCHITECTURE.md](../ARCHITECTURE.md). Kept for the debugging lessons (touch `:hover`/`:focus`
+> stickiness, backdrop roots), which are still true. The file paths and CDN list below are outdated.
+
 # Session Log — mypage (haodong.page)
 
 **日期**: 2026-08-25 ~ 08-26 (AEST)

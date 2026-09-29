@@ -1,0 +1,101 @@
+# Architecture
+
+How the card works and why it is built this way. Read this before changing the card, its animation or its fitting logic: several details look arbitrary but each one fixes a real cross-browser problem, recorded below.
+
+## Overview
+
+A static site: `index.html`, one stylesheet, two small scripts. No framework, no bundler, no runtime dependencies. It works when opened from disk (so the scripts are plain scripts, not ES modules, which browsers refuse to load from `file://`).
+
+| Piece | Responsibility |
+| --- | --- |
+| `index.html` | All content and the stamp artwork; the generated QR code between `qr:start` / `qr:end` |
+| `css/styles.css` | Tokens, the card and its layouts, the stamp, links, toggle |
+| `js/card.js` | Fitting, press tilt, press counting, the turn |
+| `js/theme.js` | Light/dark toggle (the saved theme is applied earlier by an inline script in `<head>`) |
+
+## The card is a physical object
+
+The card is **90 x 55 mm**. Inside `.card-scene`, `font-size = 1mm x --scale`, so `1em = 1mm x --scale` and every card dimension is written in `em`. Changing `--scale` resizes the whole card, text and all, as one piece; there are no media queries.
+
+- `--scale` is at most **2** (double real size) and never grows past that. On small screens it shrinks.
+- `js/card.js` measures the real pixels per millimetre with a hidden `100mm`-wide probe, so "90 mm" is right on any device.
+- The size constants exist in two places (`--card-w`/`--card-h` in CSS, `CARD_W`/`CARD_H` in JS). `npm run check` fails if they disagree.
+
+### Choosing landscape or portrait
+
+`computePose()` in `js/card.js`:
+
+1. If the landscape card fits at the largest scale, use landscape.
+2. Else if portrait fits at the largest scale, use portrait.
+3. Else use whichever needs the smaller shrink (ties favour landscape).
+
+The result is written to `data-orient` (`landscape` | `portrait`) and `--scale` on the scene. The two layouts are plain CSS keyed on `data-orient`; they are two arrangements of the same content.
+
+**Viewport height uses `100svh`, not `innerHeight`.** On mobile the address bar slides in and out, changing `innerHeight` mid-load and mid-use. That flipped the pose and scale back and forth. `100svh` (the "small viewport", toolbar shown) never changes with the bar.
+
+## Scene versus card
+
+There are two nested boxes and the split matters:
+
+- `.card-scene` **never moves**. It centres the card, holds the `perspective`, and receives the pointer events.
+- `.card` is what tilts and turns.
+
+Presses are counted on the scene, on `pointerdown`. When they were counted on the card, the card tilted away from under the pointer and the press was lost, so a turn sometimes needed more than three taps. The tilt direction is also computed from the scene's box for the same reason.
+
+## Press tilt
+
+`pointerdown` sets `--rx`, `--ry` and `--ps` on the card (rotation about X and Y, and a slight shrink), so the card dips toward the pressed point. Release removes them and a springy CSS transition returns the card to rest. The dip is held for at least 150 ms so a very quick tap is still visible.
+
+## The turn
+
+Three presses within two seconds, all in the same cell of a 3 x 3 grid over the card, turn the card to the other orientation (a press on a link or the toggle resets the count). It spins about the axis implied by where it was pressed: left/right presses give a vertical axis, top/bottom a horizontal one, corners a diagonal one.
+
+The two orientations are different layouts with different proportions, so the layout has to swap mid-turn. Getting that swap to be invisible on mobile took several iterations; the final design and the reasons for each part:
+
+- **One animation, not two.** An earlier version ran "to edge-on", then in the `finish` handler started "back to flat" and cancelled the first. On mobile the finish event arrives late and a newly started animation takes a frame or two to reach the compositor, leaving frames where nothing controlled the card. The finished flat card flashed and the turn seemed to replay. Now one `card.animate` covers the whole turn with a jump at the midpoint from `+89.5deg` to `-89.5deg`.
+- **89.5 degrees, not 90.** An exactly edge-on transform is a singular matrix, which some mobile engines cull or flicker on.
+- **Matching easing slopes.** The two halves use easing curves with the same slope where they meet, so the card keeps moving through edge-on instead of dwelling there. (A "hold" at edge-on gave time to swap the layout but was visibly a pause.)
+- **Fade-through instead of a hard swap.** A second animation, started in the same call, fades the card out as it thins toward edge-on and back in as it opens. It is fully transparent for about 23 ms around the midpoint. The layout swap is triggered there, from the animation's own clock (`currentTime`), with a timeout only as a safety net for background tabs. The card is about 4% wide and invisible at that moment.
+- **The swap runs exactly once** even if the engine fires `finish` twice or the turn is interrupted.
+- **No CSS transition may run underneath the animation.** While `.is-turning` is set the card's CSS transition is off and the press tilt is cleared, so a spring-back cannot finish after the turn and look like it replaying.
+- **`will-change: transform` on the card** puts it on its own layer from the start, so the turn is transformed rather than re-rasterised (a soft or jagged first frames problem on mobile). A 1px transparent outline on the face while turning makes browsers anti-alias its edges.
+- **Reduced motion:** with `prefers-reduced-motion`, the turn just swaps the layout.
+
+Use `?slow` in the URL to play the turn eight times slower when working on it.
+
+## The QR stamp
+
+The QR code sits on a postage-stamp shaped tile.
+
+- **Body:** an inline SVG in `index.html`: a white square with 40 circular holes centred on its edges (10 per side, in a 100-unit `viewBox`), masked, plus two offset copies at low opacity as the shadow. It is vector, so it is identical on every browser and scale. The earlier CSS version tiled a radial gradient; iOS Safari rounded the tile sizes differently and left a stray strip of paper along one edge. There is no CSS `filter: drop-shadow` on the stamp because that renders the stamp as its own surface, which appeared to slide against the card while it tilted.
+- **QR code:** generated ahead of time (`npm run qr`, using the vendored `qrcodejs` against a stub DOM) and pasted into the HTML as one SVG path. Visitors download no QR library. `shape-rendering` is the default (anti-aliased) on purpose: `crispEdges` snapped every module to whole pixels and made the code shimmer whenever the card tilted or turned. A raster canvas scaled by CSS, which the first version used, looked blurry.
+- **Size:** `--qr` (em) is the QR size; the stamp adds 1em of paper per side. It is 14 in landscape and 20.8 in portrait.
+
+## Card material
+
+The card face is translucent paper: a tint (`--card-bg`), a faint diagonal sheen, a lit rim, a soft shadow and a tiled noise "grain". There is **no `backdrop-filter`**: Firefox drops it on 3D-transformed elements (the card is one) and glitches while such an element turns, so the earlier frosted-glass version looked different on Android Firefox than elsewhere. Tint alone is identical everywhere.
+
+## Touch and gestures
+
+`.card` uses `touch-action: manipulation`: panning, pinch-zoom and pull-to-refresh still work when a drag starts on the card (on a phone the card covers most of the screen, so blocking them made the page feel stuck); only double-tap zoom is disabled. A cancelled press (the browser took over the touch) just releases the tilt.
+
+## Links and the theme toggle
+
+- The social links' hit boxes never move: only the icon inside lifts on hover/press. If the box lifted with the icon, a pointer near its bottom edge fell off it and the link flickered.
+- Hover styles are behind `@media (hover: hover)`, because touch browsers keep `:hover` on the tapped element. Press feedback uses `:active` (transient) and keyboard focus keeps a visible ring.
+- The theme toggle is a `<button>` with a constant label and `aria-pressed` for its state. Buttons do not inherit `font-size`, so the CSS sets `font-size: inherit`; otherwise the toggle would not scale with the card.
+- The saved theme is applied before first paint by an inline script (no flash), and `<meta name="theme-color">` follows the theme.
+
+## Testing
+
+There is no test framework. What exists:
+
+- `npm run check` (`tools/check.js`): JavaScript parses; every local `href`/`src` exists; every `<img>` has `alt`; exactly one `<h1>`; every CSS `var(--x)` without a fallback is defined; card size and gutter constants agree between CSS and JS; the generated QR block is present.
+- **Manual matrix** before a release: light and dark; landscape and portrait; a window that forces a shrink; a real iOS Safari and Android Firefox (the engines that behaved differently); the three-press turn on the left, right, top, bottom and corners; pull-to-refresh; `prefers-reduced-motion`.
+- When comparing screenshots for a refactor, freeze CSS transitions first, and note that headless browsers may not advance animations.
+
+## Known constraints
+
+- The text sizes are tuned for 90 x 55 mm; a different card size needs both layouts re-checked.
+- The perspective and easing constants were tuned by eye on real devices; change them with `?slow` open.
+- Fonts come from Google Fonts. To go fully offline, self-host Noto Sans and replace the two `<link>` tags.
