@@ -161,21 +161,28 @@
         // ONE animation for the whole turn (no cancel / hand-off between two
         // animations: on mobile that hand-off left a few frames where neither
         // controlled the card, so the finished flat card flashed and then the
-        // turn seemed to play again). Keyframes: 0 -> edge-on (ease-in), then a
-        // jump to the mirrored edge-on angle at the midpoint, then -> flat
-        // (ease-out). 89.5, not 90: an exactly edge-on matrix is singular,
-        // which some mobile engines cull or flicker on.
+        // turn seemed to play again). Keyframes: 0 -> edge-on (ease-in), a short
+        // HOLD at edge-on, a jump to the mirrored edge-on angle, then -> flat
+        // (ease-out). The ease-in curve races through the last ~20 degrees in
+        // a single frame, so the card is never a hairline for long: the hold
+        // (about four frames) is what guarantees there is time to swap the
+        // layout while the card is genuinely paper-thin, not still 30% wide.
+        // 89.5, not 90: an exactly edge-on matrix is singular, which some
+        // mobile engines cull or flicker on.
+        const HOLD_START = 0.455;
+        const HOLD_END = 0.545;
         const anim = card.animate([
             { transform: `rotate3d(${axis}, 0deg)`, easing: 'cubic-bezier(.5, 0, 1, .8)' },
-            { transform: `rotate3d(${axis}, 89.5deg)`, offset: 0.5 },
-            { transform: `rotate3d(${axis}, -89.5deg)`, offset: 0.5, easing: 'cubic-bezier(0, .2, .3, 1)' },
+            { transform: `rotate3d(${axis}, 89.5deg)`, offset: HOLD_START },
+            { transform: `rotate3d(${axis}, 89.5deg)`, offset: HOLD_END },
+            { transform: `rotate3d(${axis}, -89.5deg)`, offset: HOLD_END, easing: 'cubic-bezier(0, .2, .3, 1)' },
             { transform: `rotate3d(${axis}, 0deg)` }
         ], { duration: TURN_MS });
 
-        // Swap the layout just before the midpoint jump, while the card is a
-        // hairline. Driven by the animation's own clock (not a timer); a
-        // timeout is only a safety net for throttled/background tabs.
-        const SWAP_AT = TURN_MS * 0.5 - 24 * SLOW; // about one frame early
+        // Swap the layout in the middle of the hold. Driven by the
+        // animation's own clock (not a timer); a timeout is only a safety net
+        // for throttled/background tabs.
+        const SWAP_AT = TURN_MS * (HOLD_START + 0.03); // ~2 frames into the hold
         let swappedYet = false; // must run exactly once, whatever the engine does
         const doSwap = () => {
             if (swappedYet) return;
@@ -190,7 +197,7 @@
             else requestAnimationFrame(watch);
         };
         requestAnimationFrame(watch);
-        setTimeout(doSwap, TURN_MS * 0.5 + 80 * SLOW);
+        setTimeout(doSwap, TURN_MS * HOLD_END + 120 * SLOW);
 
         let done = false;
         const finish = () => {
