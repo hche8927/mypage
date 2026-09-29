@@ -26,18 +26,34 @@
         return px || 96 / 25.4;
     }
 
+    // Viewport size used for fitting. On mobile the address bar slides in and
+    // out, which changes innerHeight mid-load and mid-use and would flip the
+    // orientation/scale back and forth. 100svh is the "toolbar shown" height
+    // and never changes with it, so the layout stays put.
+    const vpProbe = document.createElement('div');
+    vpProbe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+    document.body.appendChild(vpProbe);
+    function viewport() {
+        const svh = vpProbe.getBoundingClientRect().height;
+        return {
+            w: document.documentElement.clientWidth || window.innerWidth,
+            h: svh > 0 ? svh : window.innerHeight
+        };
+    }
+
     // Orientation policy: landscape at max size if it fits, else portrait at
     // max size, else whichever needs the smaller scale-down.
     function compute(isSwapped) {
         const mm = pxPerMm();
-        const availW = window.innerWidth - GUTTER * 2;
-        const availH = window.innerHeight - GUTTER * 2;
+        const vp = viewport();
+        const availW = vp.w - GUTTER * 2;
+        const availH = vp.h - GUTTER * 2;
 
         const fit = (w, h) => Math.min(availW / (w * mm), availH / (h * mm), MAX_SCALE);
         const land = fit(CARD_W, CARD_H);
         const port = fit(CARD_H, CARD_W);
 
-        let orient = land >= port ? 'landscape' : 'portrait';
+        let orient = land >= port * 0.98 ? 'landscape' : 'portrait'; // ties favour landscape
         if (land >= MAX_SCALE) orient = 'landscape';
         else if (port >= MAX_SCALE) orient = 'portrait';
 
@@ -51,13 +67,25 @@
 
     function layout() {
         const { orient, scale } = compute(swapped);
-        scene.dataset.orient = orient;
-        scene.style.setProperty('--scale', scale.toFixed(4));
+        if (scene.dataset.orient !== orient) scene.dataset.orient = orient;
+        const v = scale.toFixed(4);
+        if (scene.style.getPropertyValue('--scale') !== v) scene.style.setProperty('--scale', v);
     }
 
-    // QR code (dark modules on a white tile so it always scans)
-    const qrHost = document.getElementById('qr');
-    if (window.QRCode && qrHost) {
+    // Coalesce bursts of resize events (mobile fires many) into one layout,
+    // and skip the turn animation's own layout swap being interleaved.
+    let rafId = 0;
+    function scheduleLayout() {
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => { rafId = 0; if (!turning) layout(); });
+    }
+
+    // QR code (dark modules on a white tile so it always scans). Built on
+    // window load: the QR library comes from a CDN and must not delay the
+    // first layout.
+    function buildQR() {
+        const qrHost = document.getElementById('qr');
+        if (!window.QRCode || !qrHost || qrHost.childElementCount) return;
         new QRCode(qrHost, {
             text: 'https://haodong.page',
             width: 256,
@@ -67,6 +95,8 @@
             correctLevel: QRCode.CorrectLevel.M
         });
     }
+    buildQR();
+    window.addEventListener('load', buildQR);
 
     // Rapid-click detector. Listens on the (never-tilted) scene and counts
     // on pointerdown, so a card that dips out from under the pointer can
@@ -177,8 +207,8 @@
     ['pointerup', 'pointercancel'].forEach((t) => scene.addEventListener(t, release));
     document.addEventListener('pointerup', release);
 
-    window.addEventListener('resize', layout);
-    window.addEventListener('orientationchange', layout);
-    if (window.visualViewport) window.visualViewport.addEventListener('resize', layout);
+    window.addEventListener('resize', scheduleLayout);
+    window.addEventListener('orientationchange', scheduleLayout);
     layout();
+    scene.classList.add('is-ready');
 })();

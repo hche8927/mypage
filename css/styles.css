@@ -12,7 +12,7 @@
     --grain-blend: normal;
 
     /* Card material: solid paper stock (a real card is opaque) */
-    --card-bg: #FCF9F2;
+    --card-bg: rgba(252, 249, 242, 0.86);
     --card-edge: rgba(44, 40, 37, 0.14);
     --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
         0 10px 24px rgba(44, 40, 37, 0.16);
@@ -34,7 +34,7 @@
     --grain-opacity: 0.045;
     --grain-blend: screen;
 
-    --card-bg: #161b22;
+    --card-bg: rgba(22, 27, 34, 0.84);
     --card-edge: rgba(255, 255, 255, 0.16);
     --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.6),
         0 12px 28px rgba(0, 0, 0, 0.55);
@@ -48,6 +48,7 @@
 * { box-sizing: border-box; }
 
 html {
+    overscroll-behavior: none; /* no pull-to-refresh / bounce */
     background-color: var(--bg-color);
     background-image: var(--bg-pattern);
     background-attachment: fixed;
@@ -69,7 +70,7 @@ a { color: inherit; text-decoration: none; }
    js/card.js computes so the card always fits the stage. */
 .stage {
     min-height: 100vh;
-    min-height: 100dvh;
+    min-height: 100svh; /* stable: ignores the mobile address bar sliding away */
     display: grid;
     place-items: center;
     padding: 16px;
@@ -81,6 +82,7 @@ a { color: inherit; text-decoration: none; }
    where 1em = 1mm * --scale, so the whole card scales as one piece.
    Change --card-w / --card-h to support another card size later. */
 .card-scene {
+    opacity: 0; /* revealed by js/card.js after the first layout (no flash) */
     --card-w: 90;
     --card-h: 55;
     --scale: 2;
@@ -89,6 +91,7 @@ a { color: inherit; text-decoration: none; }
     width: calc(var(--card-w) * 1em);
     height: calc(var(--card-h) * 1em);
 }
+.card-scene.is-ready { opacity: 1; transition: opacity 0.2s ease; }
 .card-scene[data-orient="portrait"] {
     width: calc(var(--card-h) * 1em);
     height: calc(var(--card-w) * 1em);
@@ -105,7 +108,7 @@ a { color: inherit; text-decoration: none; }
     cursor: default;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: manipulation;
+    touch-action: none; /* no scroll/zoom/pull-to-refresh from touching the card */
     -webkit-tap-highlight-color: transparent;
 }
 .card.is-pressed {
@@ -247,11 +250,17 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== Theme toggle (floating) ===== */
 .theme-toggle {
+    /* Buttons don't inherit font-size by default (UA sets ~13px), which
+       broke every em below when the card scaled: inherit the card's unit. */
+    font: inherit;
+    font-size: inherit;
     position: absolute;
+    /* Icon is centred in the 4em box, so the visible gap to the card's
+       top and right edges is 2.4 + (5 - 3.2)/2 = 3.3em on both sides. */
     top: 2.4em;
     right: 2.4em;
-    width: 4em;
-    height: 4em;
+    width: 5em;
+    height: 5em;
     display: grid;
     place-items: center;
     border-radius: 50%;
@@ -273,8 +282,8 @@ a { color: inherit; text-decoration: none; }
     outline-offset: 2px;
 }
 .theme-icon {
-    width: 2.2em;
-    height: 2.2em;
+    width: 3.2em;
+    height: 3.2em;
     display: block;
     transition: transform 0.3s ease;
 }
@@ -288,5 +297,5 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* Keep the name clear of the on-card theme toggle */
-.card-scene[data-orient="landscape"] .id-block { padding-right: 3.5em; padding-top: 6em; }
+.card-scene[data-orient="landscape"] .id-block { padding-right: 5em; padding-top: 6em; }
 .card-scene[data-orient="landscape"] .name { font-size: 4.9em; }
