@@ -51,7 +51,7 @@
     --holo-foil-gradient: repeating-linear-gradient(115deg,
         #98a0ab 0%, #f6f8fb 4%, #c3c9d2 8%, #7c838e 13%,
         #eaeef3 17%, #b1b8c2 22%, #98a0ab 26%);
-    --holo-foil-opacity: 0.11;
+    --holo-foil-opacity: 0.07;
     --holo-foil-blend: screen;
     --holo-sparkle-opacity: 0.6;
     --holo-sparkle-blend: screen;
@@ -98,7 +98,7 @@
         hsl(350 100% 62%) 0%, hsl(40 100% 62%) 3.7%, hsl(100 100% 60%) 7.3%,
         hsl(170 100% 58%) 11%, hsl(220 100% 66%) 14.7%, hsl(290 100% 66%) 18.3%,
         hsl(350 100% 62%) 22%);
-    --holo-foil-opacity: 0.06;
+    --holo-foil-opacity: 0.04;
     --holo-foil-blend: multiply;
     --holo-sparkle-opacity: 0.4;
     --holo-sparkle-blend: overlay;
@@ -454,10 +454,12 @@ a {
     background: var(--holo-foil-gradient);
     background-size: 200% 200%;
     background-repeat: no-repeat;
-    /* The image is 180 x 110em, the card 90 x 55em. Centred (-45em, -27.5em)
-       and shifted by at most 25em / 15em, the image always covers the whole card,
-       so its edge (a visible seam) can never slide into view. */
-    background-position: calc(-45em + var(--px) * -25em) calc(-27.5em + var(--py) * -15em);
+    /* The image is 200% of the face. A background-position of p% puts the image
+       at -p% of the face, so anything from 0% to 100% covers it completely; 50%
+       is centred and +-28% is the travel, so the image's edge (a visible seam)
+       can never slide into view. Percentages, not em, so this holds in both
+       orientations (the face is 90 x 55em landscape but 55 x 90em portrait). */
+    background-position: calc(50% + var(--px) * -28%) calc(50% + var(--py) * -28%);
     mix-blend-mode: var(--holo-foil-blend);
     opacity: calc(var(--holo-foil-opacity) * (0.45 + var(--holo) * 0.85));
 }
@@ -486,10 +488,10 @@ a {
     will-change: transform;
 }
 
-.id-block      { transform: translate(calc(var(--px) * 0.5em), calc(var(--py) * 0.5em)); }
-.social-links  { transform: translate(calc(var(--px) * 0.9em), calc(var(--py) * 0.9em)); }
-.qr            { transform: translate(calc(var(--px) * 1.2em), calc(var(--py) * 1.2em)); }
-.theme-toggle  { transform: translate(calc(var(--px) * 0.7em), calc(var(--py) * 0.7em)); }
+.id-block      { transform: translate(calc(var(--px) * 0.2em), calc(var(--py) * 0.2em)); }
+.social-links  { transform: translate(calc(var(--px) * 0.35em), calc(var(--py) * 0.35em)); }
+.qr            { transform: translate(calc(var(--px) * 0.5em), calc(var(--py) * 0.5em)); }
+.theme-toggle  { transform: translate(calc(var(--px) * 0.25em), calc(var(--py) * 0.25em)); }
 
 /* ==========================================================================
    7. Layouts
