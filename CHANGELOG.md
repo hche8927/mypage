@@ -8,7 +8,7 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 - In the vertical layout, tilting far to the right slid the foil off the card and revealed a strip with no foil. The foil position is now relative to the card, so it covers it fully in both orientations.
 
 ### Changed
-- The parallax inside the card is about 60% gentler.
+- The parallax inside the card is about 60% gentler, and the glitter drifts about 80% less.
 - The foil is weaker in both themes.
 
 ## [3.1.0] - 2026-09-29

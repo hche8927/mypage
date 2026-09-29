@@ -18,8 +18,8 @@ const path = require('path');
 
 const OUT = path.resolve(__dirname, '..', 'assets', 'sparkle.svg');
 
-// Tile size in em. Larger than the card (90 x 55) plus the parallax travel
-// (about 94 x 58), so a repeat is never visible at the same time.
+// Tile size in em. Much larger than the card (90 x 55) plus the drift of the
+// glitter layer (about 18 x 11), so a repeat is never visible at the same time.
 const W = 200;
 const H = 120;
 const MIN_DISTANCE = 10;    // em between any two dots
