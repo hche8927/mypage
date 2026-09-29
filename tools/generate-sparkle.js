@@ -25,6 +25,8 @@ const H = 120;
 const MIN_DISTANCE = 10;    // em between any two dots
 const TARGET_DOTS = 170;
 const SEED = 20260929;
+const MIN_CORE = 0.07;      // radius of the finest specks, em
+const MAX_CORE = 0.19;      // radius of the largest dots, em (halo reaches 2.7x this)
 
 // Small deterministic PRNG (mulberry32)
 function rng(seed) {
@@ -55,7 +57,7 @@ for (let attempt = 0; attempt < 20000 && dots.length < TARGET_DOTS; attempt++) {
 
 // Sizes: mostly fine specks, a few larger dots (cubing skews toward small).
 for (const d of dots) {
-    d.core = 0.07 + 0.26 * Math.pow(random(), 3); // bright core radius, em
+    d.core = MIN_CORE + (MAX_CORE - MIN_CORE) * Math.pow(random(), 3); // bright core radius, em
     d.tint = random() < 0.5 ? 'w' : 's';          // white or cool silver
 }
 
