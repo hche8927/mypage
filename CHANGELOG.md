@@ -4,6 +4,15 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [3.1.2] - 2026-09-30
+
+### Changed
+- **Device tilt is off on iPhones and iPads.** They only report tilt after a system permission prompt, and the effect is not worth interrupting anyone for. Touch and the idle drift still drive the foil there; Android is unchanged.
+- The foil is slightly stronger than in 3.1.1: 0.05 dark / 0.04 light (was 0.03 / 0.02).
+
+### Removed
+- The "Enable motion sensors" button in the `?gyro` debug panel, and the permission handling behind it.
+
 ## [3.1.1] - 2026-09-29
 
 ### Fixed
@@ -108,7 +117,8 @@ A major release: a codebase-wide refactor plus the project's first licence. The 
 
 The original classic single page: navigation bar, hero with social links, and an About section, with a liquid-glass look, a circuit-board background and light/dark themes. Notes from that version are in [docs/archive/session-log-2026-08.md](docs/archive/session-log-2026-08.md).
 
-[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.1...HEAD
+[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.2...HEAD
+[3.1.2]: https://github.com/hche8927/mypage/compare/3.1.1...3.1.2
 [3.1.1]: https://github.com/hche8927/mypage/compare/3.1.0...3.1.1
 [3.1.0]: https://github.com/hche8927/mypage/compare/3.0.0...3.1.0
 [3.0.0]: https://github.com/hche8927/mypage/compare/2.2.0...3.0.0

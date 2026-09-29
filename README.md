@@ -27,7 +27,7 @@ npm run check      # sanity checks: syntax, local links, CSS variables, shared c
 npm run qr         # regenerate the QR code in index.html (see "Changing the QR code")
 ```
 
-Adding `?slow` to the address (for example `http://localhost:8000/?slow`) plays the turn animation eight times slower, which helps when debugging it. Adding `?gyro` shows a small panel with the raw phone-tilt values, the permission state and the derived foil position, for checking the tilt effect on a real device.
+Adding `?slow` to the address (for example `http://localhost:8000/?slow`) plays the turn animation eight times slower, which helps when debugging it. Adding `?gyro` shows a small panel with the raw phone-tilt values, whether sensor events are arriving and the derived foil position, for checking the tilt effect on a real device.
 
 ## Project structure
 
@@ -77,7 +77,7 @@ Also update the `href` and `aria-label` of the `.qr` link.
 
 ## Browser support
 
-Current versions of Chrome, Edge, Firefox and Safari (desktop, iOS and Android). The page relies on CSS `svh` units, `will-change`, `mix-blend-mode`, the Web Animations API and `text-wrap: balance` (the last one only improves line breaks). Without JavaScript the card is shown at its default size and orientation, and the toggle and turn do nothing. On iPhones and iPads the first tap asks permission to read the device's motion sensors; if refused, the foil still follows touch and the idle drift.
+Current versions of Chrome, Edge, Firefox and Safari (desktop, iOS and Android). The page relies on CSS `svh` units, `will-change`, `mix-blend-mode`, the Web Animations API and `text-wrap: balance` (the last one only improves line breaks). Without JavaScript the card is shown at its default size and orientation, and the toggle and turn do nothing. Phone tilt drives the effect on Android; iPhones and iPads would need a permission prompt for it, so it is off there (touch and the idle drift still work).
 
 ## Deployment and releases
 

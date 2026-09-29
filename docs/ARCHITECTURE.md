@@ -82,7 +82,7 @@ A holographic look in the spirit of the foil cards in Pokemon TCG Pocket, (the f
 **The numbers (`js/holo.js`).** Three sources feed one target position of "the light", smoothed frame by frame and written as custom properties on `<html>`:
 
 - the pointer (the mouse anywhere on the page; a finger while it is down),
-- the device's tilt (`deviceorientation`; on iOS it needs a permission, requested on the first tap, and if refused the other sources still work),
+- the device's tilt (`deviceorientation`; used where the browser reports it freely, i.e. Android. **It is switched off on iOS and iPadOS**, which only report tilt after a system permission prompt; the effect is not worth interrupting anyone for, so there the pointer, touch and the idle drift drive it),
 - an idle drift (a slow figure-of-eight after 2.5 s without input, updated about 30 times a second and paused while the page is hidden), so the foil shimmers on a screen nobody is moving.
 
 The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` (0..1, how strongly the foil shows). The hover tilt goes to `.card-tilt` as `--tilt-x` / `--tilt-y`.
@@ -98,7 +98,7 @@ The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` 
 
 A phone held to read (about 50 degrees back from upright) is the neutral pose; 22 degrees either way is the full range. The sign matches the press dip: the side of the screen that tilts away from you is the side the light moves toward. The maths was checked in a script that builds poses in screen space for all four angles and confirms the result; what could not be checked without devices is whether every device follows the angle convention in the table, which is what the debug panel is for.
 
-**Debugging on a device.** Add `?gyro` to the URL for a small panel showing the permission state, whether events are arriving (and how many per second), the raw `alpha` / `beta` / `gamma`, the screen angle, the derived light position and the values driving the foil. On iOS, when permission is still needed (or was refused), the panel also has an "Enable motion sensors" button.
+**Debugging on a device.** Add `?gyro` to the URL for a small panel showing whether the tilt is being read (or why not, for example "off (iOS asks for permission)"), how many events arrive per second, the raw `alpha` / `beta` / `gamma`, the screen angle, the derived light position and the values driving the foil.
 
 **What the CSS does (section 6 of `css/styles.css`).**
 
@@ -110,7 +110,7 @@ A phone held to read (about 50 degrees back from upright) is the neutral pose; 2
 
 **Decisions and cautions.**
 
-- The effect is intentionally subtle (foil opacity 0.03 on dark, 0.02 on light, glitter 0.2 and 0.1, rising by about 40% only while the pointer is active). Earlier values (0.34 rainbow, 0.2 silver, then 0.11 / 0.08 and 0.07 / 0.04) were all too loud.
+- The effect is intentionally subtle (foil opacity 0.05 on dark, 0.04 on light, glitter 0.2 and 0.1, rising by about 40% only while the pointer is active). Earlier values (0.34 rainbow, 0.2 silver, then 0.11 / 0.08, 0.07 / 0.04 and briefly 0.03 / 0.02, which was too faint) were not right.
 - The foil also once had fine horizontal "brushed metal" lines; with the glitter they read as a grid texture, so they were removed.
 - `.holo` never receives pointer events and is `aria-hidden`.
 - **Reduced motion:** `js/holo.js` does not run, so the foil and parallax stay at their static resting values and there is no idle drift, gyro or hover tilt.

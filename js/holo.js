@@ -16,8 +16,11 @@
  * The hover tilt goes to the .card-tilt wrapper (--tilt-x / --tilt-y), which is
  * separate from .card so it never fights the press dip or the turn animation.
  *
- * Add ?gyro to the URL to show a small panel with the raw sensor values, the
- * permission state and the numbers this file derives from them.
+ * Device tilt is used where the browser gives it freely (Android). It is off on
+ * iOS, which would need a permission prompt.
+ *
+ * Add ?gyro to the URL to show a small panel with the raw sensor values, whether
+ * events are arriving and the numbers this file derives from them.
  */
 (function () {
     'use strict';
@@ -100,7 +103,6 @@
     const DEBUG = /[?&]gyro\b/.test(window.location.search);
     const stats = { motion: 'not started', events: 0, valid: 0, alpha: null, beta: null, gamma: null, lean: null };
     let debugPanel = null;
-    let requestMotionFromButton = null; // set later; the panel's button calls it
 
     function createDebugPanel() {
         const panel = document.createElement('div');
@@ -109,14 +111,9 @@
             'border-radius:8px;background:rgba(0,0,0,.78);color:#8f8;font:11px/1.45 ui-monospace,Menlo,Consolas,monospace;' +
             'white-space:pre;pointer-events:none;';
         const text = document.createElement('div');
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = 'Enable motion sensors';
-        button.style.cssText = 'display:none;margin-top:6px;padding:6px 10px;pointer-events:auto;font:inherit;';
-        button.addEventListener('click', () => { if (requestMotionFromButton) requestMotionFromButton(); });
-        panel.append(text, button);
+        panel.append(text);
         document.body.appendChild(panel);
-        return { text, button };
+        return { text };
     }
 
     function renderDebug(now) {
@@ -136,7 +133,6 @@
             `foil px,py,holo: ${f(current.x, 2)}, ${f(current.y, 2)}, ${f(current.holo, 2)}`,
             `reduced motion: ${reducedMotion && reducedMotion.matches ? 'ON (effects disabled)' : 'off'}`
         ].join('\n');
-        debugPanel.button.style.display = stats.motion === 'needs tap' || stats.motion === 'denied' ? 'inline-block' : 'none';
     }
 
     // ------------------------------------------------------------------- state
@@ -263,30 +259,16 @@
         window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     }
 
+    // iOS and iPadOS only report device tilt after the user answers a system
+    // permission prompt. The tilt effect is not worth interrupting anyone for, so
+    // it is simply off there (pointer, touch and the idle drift still work).
     const needsPermission = typeof window.DeviceOrientationEvent === 'function' &&
         typeof window.DeviceOrientationEvent.requestPermission === 'function';
-
-    /** Asks for motion access where the browser requires it (iOS); must run inside a user gesture. */
-    function requestMotion() {
-        if (!needsPermission) { listenToDevice(); return Promise.resolve(); }
-        return window.DeviceOrientationEvent.requestPermission()
-            .then((state) => {
-                stats.motion = state === 'granted' ? 'granted' : 'denied';
-                if (state === 'granted') listenToDevice();
-            })
-            .catch(() => { stats.motion = 'denied'; /* refused or unavailable: pointer and idle drift still work */ });
-    }
-    requestMotionFromButton = requestMotion;
 
     if (!('DeviceOrientationEvent' in window)) {
         stats.motion = 'unsupported';
     } else if (needsPermission) {
-        // iOS asks for permission, and only inside a user gesture: on the first tap.
-        stats.motion = 'needs tap';
-        window.addEventListener('click', function askOnce() {
-            window.removeEventListener('click', askOnce);
-            requestMotion();
-        });
+        stats.motion = 'off (iOS asks for permission)';
     } else {
         listenToDevice(); // Android and desktop: no permission needed
     }

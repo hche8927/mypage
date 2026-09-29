@@ -51,7 +51,7 @@
     --holo-foil-gradient: repeating-linear-gradient(115deg,
         #98a0ab 0%, #f6f8fb 4%, #c3c9d2 8%, #7c838e 13%,
         #eaeef3 17%, #b1b8c2 22%, #98a0ab 26%);
-    --holo-foil-opacity: 0.03;
+    --holo-foil-opacity: 0.05;
     --holo-foil-blend: screen;
     --holo-sparkle-opacity: 0.2;
     --holo-sparkle-blend: screen;
@@ -98,7 +98,7 @@
         hsl(350 100% 62%) 0%, hsl(40 100% 62%) 3.7%, hsl(100 100% 60%) 7.3%,
         hsl(170 100% 58%) 11%, hsl(220 100% 66%) 14.7%, hsl(290 100% 66%) 18.3%,
         hsl(350 100% 62%) 22%);
-    --holo-foil-opacity: 0.02;
+    --holo-foil-opacity: 0.04;
     --holo-foil-blend: multiply;
     --holo-sparkle-opacity: 0.1;
     --holo-sparkle-blend: overlay;
