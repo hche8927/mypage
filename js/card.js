@@ -156,13 +156,15 @@
             { transform: `rotate3d(${axis}, 0deg) scale(1, 1)` },
             { transform: `rotate3d(${axis}, 80deg) scale(1, 1)`, offset: 0.85 },
             // Edge-on: match the sliver's size to the new layout's
-            { transform: `rotate3d(${axis}, 90deg) scale(${w1 / w0}, ${h1 / h0})` }
+            // (89.5, not 90: an exactly edge-on matrix is singular, which some
+            // mobile engines cull or flicker on)
+            { transform: `rotate3d(${axis}, 89.5deg) scale(${w1 / w0}, ${h1 / h0})` }
         ], { duration: 380, easing: 'cubic-bezier(.5, 0, 1, .8)', fill: 'forwards' });
         out.onfinish = () => {
             swapped = !swapped;
             layout();
             const back = card.animate([
-                { transform: `rotate3d(${axis}, -90deg)` },
+                { transform: `rotate3d(${axis}, -89.5deg)` },
                 { transform: `rotate3d(${axis}, 0deg)` }
             ], { duration: 380, easing: 'cubic-bezier(0, .2, .3, 1)' });
             out.cancel();

@@ -11,13 +11,14 @@
     --grain-opacity: 0.10;
     --grain-blend: normal;
 
-    /* Card material: solid paper stock (a real card is opaque) */
-    --card-bg: rgba(252, 249, 242, 0.45);
+    /* Card material: translucent paper. No backdrop blur (Firefox drops it on
+       3D-transformed elements and glitches turning them), so the tint alone
+       carries the look and it is identical on every browser. */
+    --card-bg: rgba(252, 249, 242, 0.74);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.16) 0%,
         rgba(255, 255, 255, 0.04) 40%, rgba(255, 255, 255, 0) 65%);
     --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.35),
         inset 0 -1px 0 rgba(44, 40, 37, 0.04);
-    --card-blur: 7px;
     --card-edge: rgba(44, 40, 37, 0.14);
     --card-shadow: 0 1px 2px rgba(44, 40, 37, 0.18),
         0 10px 24px rgba(44, 40, 37, 0.16);
@@ -39,7 +40,7 @@
     --grain-opacity: 0.045;
     --grain-blend: screen;
 
-    --card-bg: rgba(22, 27, 34, 0.46);
+    --card-bg: rgba(22, 27, 34, 0.72);
     --card-sheen: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%,
         rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0) 65%);
     --card-rim: inset 0 1px 0 rgba(255, 255, 255, 0.14),
@@ -57,7 +58,6 @@
 * { box-sizing: border-box; }
 
 html {
-    overscroll-behavior: none; /* no pull-to-refresh / bounce */
     background-color: var(--bg-color);
     background-image: var(--bg-pattern);
     background-attachment: fixed;
@@ -110,17 +110,13 @@ a { color: inherit; text-decoration: none; }
     position: relative;
     width: 100%;
     height: 100%;
-    /* (no preserve-3d: single face, and it would break backdrop-filter) */
-    /* Always its own layer, so its pixels are rasterised the same way at
-       rest and while tilting (no snap when the tilt starts). */
-    will-change: transform;
     /* Press tilt: JS sets --rx/--ry/--ps from where the card is pressed */
     transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--ps, 1));
     transition: transform 0.55s cubic-bezier(.3, 1.6, .5, 1); /* springy release */
     cursor: default;
     user-select: none;
     -webkit-user-select: none;
-    touch-action: none; /* no scroll/zoom/pull-to-refresh from touching the card */
+    touch-action: manipulation; /* keep pan / pinch / pull-to-refresh; only double-tap zoom is off */
     -webkit-tap-highlight-color: transparent;
 }
 .card.is-pressed {
@@ -134,11 +130,8 @@ a { color: inherit; text-decoration: none; }
     flex-direction: column;
     padding: 5em;
     border-radius: 2.5em; /* rounded-corner stock; use 0 for square cut */
-    /* Frosted glass: translucent tint + soft blur of the pattern behind,
-       a faint diagonal sheen and a lit rim. Kept subtle, not mirror-glassy. */
+    /* Translucent paper: tint, a faint diagonal sheen and a lit rim. */
     background: var(--card-sheen), var(--card-bg);
-    -webkit-backdrop-filter: blur(var(--card-blur));
-    backdrop-filter: blur(var(--card-blur));
     border: 0.15em solid var(--card-edge);
     box-shadow: var(--card-shadow), var(--card-rim);
     backface-visibility: hidden;
@@ -193,8 +186,12 @@ a { color: inherit; text-decoration: none; }
     display: block;
     padding: 1em;
     line-height: 0;
+    /* Tile size and offset are PERCENTAGES of the stamp (10% tiles, shifted by
+       half a tile: -5.5556% = -0.05 / 0.9), so the 10 x 10 grid always fits
+       the box exactly. Fixed em/px tile sizes got rounded per tile on iOS,
+       leaving a stray strip of paper along the bottom edge. */
     background: radial-gradient(transparent 0, transparent calc(var(--t) * 0.3), #fff calc(var(--t) * 0.3))
-        calc(var(--t) / -2) calc(var(--t) / -2) / var(--t) var(--t);
+        -5.5556% -5.5556% / 10% 10%;
     position: relative; /* (no z-index: the shadows sit behind this box, in the face's stacking context) */
     /* No filter: a drop-shadow filter makes the stamp its own render surface,
        which is rasterised/snapped separately from the card and can appear to
@@ -209,7 +206,7 @@ a { color: inherit; text-decoration: none; }
     z-index: -1;
     pointer-events: none;
     background: radial-gradient(transparent 0, transparent calc(var(--t) * 0.3), var(--shadow-tint) calc(var(--t) * 0.3))
-        calc(var(--t) / -2) calc(var(--t) / -2) / var(--t) var(--t);
+        -5.5556% -5.5556% / 10% 10%;
 }
 /* ::before is painted first (wider, fainter); ::after on top (tighter, darker) */
 .qr::before { --shadow-tint: rgba(0, 0, 0, 0.10); transform: translate(0.1em, 0.3em); }
