@@ -80,20 +80,30 @@
         rafId = requestAnimationFrame(() => { rafId = 0; if (!turning) layout(); });
     }
 
-    // QR code (dark modules on a white tile so it always scans). Built on
-    // window load: the QR library comes from a CDN and must not delay the
-    // first layout.
+    // Vector QR (SVG): crisp at any scale or 3D angle. A raster canvas scaled
+    // down by CSS was the cause of the occasional blur. Built on window load:
+    // the QR library comes from a CDN and must not delay the first layout.
+    function qrSvg(text) {
+        const tmp = document.createElement('div');
+        const q = new QRCode(tmp, {
+            text, width: 64, height: 64, correctLevel: QRCode.CorrectLevel.M
+        });
+        const m = q._oQRCode;
+        const n = m.getModuleCount();
+        let d = '';
+        for (let r = 0; r < n; r++) {
+            for (let c = 0; c < n; c++) {
+                if (m.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+            }
+        }
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" ` +
+            `shape-rendering="geometricPrecision" role="img" aria-label="QR code">` +
+            `<path d="${d}" fill="#2C2825"/></svg>`;
+    }
     function buildQR() {
         const qrHost = document.getElementById('qr');
         if (!window.QRCode || !qrHost || qrHost.childElementCount) return;
-        new QRCode(qrHost, {
-            text: 'https://haodong.page',
-            width: 256,
-            height: 256,
-            colorDark: '#2C2825',
-            colorLight: '#ffffff',
-            correctLevel: QRCode.CorrectLevel.M
-        });
+        qrHost.innerHTML = qrSvg('https://haodong.page');
     }
     buildQR();
     window.addEventListener('load', buildQR);
