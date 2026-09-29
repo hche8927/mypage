@@ -122,6 +122,10 @@ a { color: inherit; text-decoration: none; }
 .card.is-pressed {
     transition: transform 0.12s ease-out; /* quick, firm press */
 }
+/* While the card turns, no CSS transition may run underneath the turn
+   animation (a spring-back finishing after it looked like the turn replaying) */
+.card-scene.is-turning .card,
+.card-scene.is-turning .card.is-pressed { transition: none; }
 
 .face {
     position: absolute;
@@ -176,9 +180,9 @@ a { color: inherit; text-decoration: none; }
     color: var(--text-muted);
 }
 
-/* QR code as a postage stamp. The perforation tile is 1/10 of the
-   stamp width and the holes are centred on the grid lines, so all four
-   edges get identical semicircle notches (symmetric). --qr = QR size in em. */
+/* QR code as a postage stamp: 40 perforation holes centred on the edges (10
+   per side, 100-unit viewBox) so all four sides are identical. --qr = QR
+   size in em; the stamp is that plus 1em of paper on each side. */
 .card-scene { --qr: 14; }
 .qr {
     --t: calc((var(--qr) + 2) * 0.1em);
@@ -186,32 +190,21 @@ a { color: inherit; text-decoration: none; }
     display: block;
     padding: 1em;
     line-height: 0;
-    /* Tile size and offset are PERCENTAGES of the stamp (10% tiles, shifted by
-       half a tile: -5.5556% = -0.05 / 0.9), so the 10 x 10 grid always fits
-       the box exactly. Fixed em/px tile sizes got rounded per tile on iOS,
-       leaving a stray strip of paper along the bottom edge. */
-    background: radial-gradient(transparent 0, transparent calc(var(--t) * 0.3), #fff calc(var(--t) * 0.3))
-        -5.5556% -5.5556% / 10% 10%;
-    position: relative; /* (no z-index: the shadows sit behind this box, in the face's stacking context) */
-    /* No filter: a drop-shadow filter makes the stamp its own render surface,
-       which is rasterised/snapped separately from the card and can appear to
-       slide against it while the card tilts or turns. The shadow is instead
-       two offset copies of the perforated shape (same background, tinted). */
+    position: relative;
 }
-.qr::before,
-.qr::after {
-    content: "";
+/* The stamp body is an inline SVG (see index.html): a vector shape, so the
+   perforations are pixel-identical on every browser. CSS gradient tiles were
+   rounded differently by iOS Safari, which left a stray strip of paper. */
+.stamp {
     position: absolute;
     inset: 0;
-    z-index: -1;
+    width: 100%;
+    height: 100%;
+    overflow: visible; /* the shadow copies spill past the box */
     pointer-events: none;
-    background: radial-gradient(transparent 0, transparent calc(var(--t) * 0.3), var(--shadow-tint) calc(var(--t) * 0.3))
-        -5.5556% -5.5556% / 10% 10%;
 }
-/* ::before is painted first (wider, fainter); ::after on top (tighter, darker) */
-.qr::before { --shadow-tint: rgba(0, 0, 0, 0.10); transform: translate(0.1em, 0.3em); }
-.qr::after  { --shadow-tint: rgba(0, 0, 0, 0.26); transform: translate(0.05em, 0.14em); }
 .qr-inner {
+    position: relative; /* paints above the .stamp svg */
     display: block;
     width: calc(var(--qr) * 1em);
     height: calc(var(--qr) * 1em);

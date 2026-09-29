@@ -147,6 +147,15 @@
             return;
         }
         turning = true;
+        // Nothing may animate underneath the turn: drop the press tilt right
+        // now (transitions are off while .is-turning), so no spring-back can
+        // finish after the turn and look like it playing again.
+        clearTimeout(releaseTimer);
+        scene.classList.add('is-turning');
+        card.classList.remove('is-pressed');
+        card.style.removeProperty('--rx');
+        card.style.removeProperty('--ry');
+        card.style.removeProperty('--ps');
         const before = compute(swapped);
         const after = compute(!swapped);
         const dims = (o) => o.orient === 'landscape' ? [CARD_W, CARD_H] : [CARD_H, CARD_W];
@@ -160,15 +169,27 @@
             // mobile engines cull or flicker on)
             { transform: `rotate3d(${axis}, 89.5deg) scale(${w1 / w0}, ${h1 / h0})` }
         ], { duration: 380, easing: 'cubic-bezier(.5, 0, 1, .8)', fill: 'forwards' });
+        let swappedYet = false; // the swap must run exactly once, whatever the engine does
         out.onfinish = () => {
+            if (swappedYet) return;
+            swappedYet = true;
             swapped = !swapped;
             layout();
             const back = card.animate([
-                { transform: `rotate3d(${axis}, -89.5deg)` },
-                { transform: `rotate3d(${axis}, 0deg)` }
+                { transform: `rotate3d(${axis}, -89.5deg) scale(1, 1)` },
+                { transform: `rotate3d(${axis}, 0deg) scale(1, 1)` }
             ], { duration: 380, easing: 'cubic-bezier(0, .2, .3, 1)' });
             out.cancel();
-            back.onfinish = () => { turning = false; };
+            let done = false;
+            back.onfinish = () => {
+                if (done) return;
+                done = true;
+                // Let the rest pose settle for a frame before transitions return.
+                requestAnimationFrame(() => {
+                    scene.classList.remove('is-turning');
+                    turning = false;
+                });
+            };
         };
     }
 
@@ -179,7 +200,12 @@
     let pressedAt = 0;
     let pressAxis = [0, 1];  // rotation axis of the last press (sets flip direction)
     let releaseTimer = null;
+    let lastDownAt = 0;
     scene.addEventListener('pointerdown', (e) => {
+        // One press = one count: ignore secondary pointers and duplicate events
+        if (e.isPrimary === false) return;
+        if (e.timeStamp - lastDownAt < 40) return;
+        lastDownAt = e.timeStamp;
         const r = scene.getBoundingClientRect(); // stable: the card itself is tilting
         const cl = (v) => Math.max(-1, Math.min(1, v));
         const nx = cl(((e.clientX - r.left) / r.width - 0.5) * 2);
