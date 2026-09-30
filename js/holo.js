@@ -16,8 +16,9 @@
  * The hover tilt goes to the .card-tilt wrapper (--tilt-x / --tilt-y), which is
  * separate from .card so it never fights the press dip or the turn animation.
  *
- * Device tilt is used where the browser gives it freely (Android). It is off on
- * iOS, which would need a permission prompt.
+ * Device tilt is used where the browser gives it freely (Android), for the foil
+ * and parallax only; it does not lean the card. It is off on iOS, which would
+ * need a permission prompt.
  *
  * Add ?gyro to the URL to show a small panel with the raw sensor values, whether
  * events are arriving and the numbers this file derives from them.
@@ -143,6 +144,8 @@
 
     const target = { x: 0, y: 0, holo: HOLO_IDLE };
     const current = { x: 0, y: 0, holo: HOLO_IDLE };
+    const lean = { x: 0, y: 0 };  // the card's own lean: follows current, except while the device tilt drives
+    let deviceDriven = false;     // the device tilt (not pointer / idle) is moving the light
     let lastInputAt = 0;   // when a real input (pointer / gyro) last moved the target
     let lastWriteAt = 0;
     let frame = 0;
@@ -167,8 +170,8 @@
         root.style.setProperty('--my', ((current.y + 1) / 2).toFixed(4));
         root.style.setProperty('--holo', current.holo.toFixed(4));
         // Tilt like the press dip: the side nearest the light goes away.
-        tilt.style.setProperty('--tilt-x', `${(-current.y * TILT_DEG).toFixed(3)}deg`);
-        tilt.style.setProperty('--tilt-y', `${(current.x * TILT_DEG).toFixed(3)}deg`);
+        tilt.style.setProperty('--tilt-x', `${(-lean.y * TILT_DEG).toFixed(3)}deg`);
+        tilt.style.setProperty('--tilt-y', `${(lean.x * TILT_DEG).toFixed(3)}deg`);
     }
 
     // ------------------------------------------------------------------- loop
@@ -186,12 +189,16 @@
             target.x = Math.sin(phase) * DRIFT_RADIUS;
             target.y = Math.sin(phase * 2) * DRIFT_RADIUS * 0.6;
             target.holo = HOLO_IDLE;
+            deviceDriven = false;
         }
         lastWriteAt = now;
 
         current.x += (target.x - current.x) * SMOOTHING;
         current.y += (target.y - current.y) * SMOOTHING;
         current.holo += (target.holo - current.holo) * SMOOTHING;
+        // Device tilt moves the foil and parallax but never leans the card.
+        lean.x += ((deviceDriven ? 0 : current.x) - lean.x) * SMOOTHING;
+        lean.y += ((deviceDriven ? 0 : current.y) - lean.y) * SMOOTHING;
         write();
     }
 
@@ -205,6 +212,7 @@
 
     function aim(x, y) {
         lastInputAt = performance.now();
+        deviceDriven = false;
         target.x = x;
         target.y = y;
         target.holo = HOLO_ACTIVE;
@@ -243,12 +251,13 @@
         if (event.gamma === null || event.beta === null) return; // desktop browsers fire one empty event
         stats.valid += 1;
 
-        const lean = leanFromDevice(event.beta, event.gamma, screenAngle());
-        stats.lean = lean;
+        const light = leanFromDevice(event.beta, event.gamma, screenAngle());
+        stats.lean = light;
         lastInputAt = performance.now();
-        target.x = lean.x;
-        target.y = lean.y;
-        target.holo = HOLO_IDLE + (HOLO_ACTIVE - HOLO_IDLE) * Math.min(1, Math.hypot(lean.x, lean.y) * 1.5 + 0.35);
+        deviceDriven = true;
+        target.x = light.x;
+        target.y = light.y;
+        target.holo = HOLO_IDLE + (HOLO_ACTIVE - HOLO_IDLE) * Math.min(1, Math.hypot(light.x, light.y) * 1.5 + 0.35);
     }
 
     let listening = false;

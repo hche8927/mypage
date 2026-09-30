@@ -4,6 +4,14 @@ All notable changes to this site. The format follows [Keep a Changelog](https://
 
 ## [Unreleased]
 
+## [3.1.3] - 2026-09-30
+
+### Fixed
+- The theme button was hard to press once the card's press dip moved it out from under the pointer. It now has a larger invisible hit area around it.
+
+### Changed
+- Device tilt (Android) no longer leans the card; it still moves the foil, glitter and parallax. Pointer, touch and the idle drift lean the card as before.
+
 ## [3.1.2] - 2026-09-30
 
 ### Changed
@@ -117,7 +125,8 @@ A major release: a codebase-wide refactor plus the project's first licence. The 
 
 The original classic single page: navigation bar, hero with social links, and an About section, with a liquid-glass look, a circuit-board background and light/dark themes. Notes from that version are in [docs/archive/session-log-2026-08.md](docs/archive/session-log-2026-08.md).
 
-[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.2...HEAD
+[Unreleased]: https://github.com/hche8927/mypage/compare/3.1.3...HEAD
+[3.1.3]: https://github.com/hche8927/mypage/compare/3.1.2...3.1.3
 [3.1.2]: https://github.com/hche8927/mypage/compare/3.1.1...3.1.2
 [3.1.1]: https://github.com/hche8927/mypage/compare/3.1.0...3.1.1
 [3.1.0]: https://github.com/hche8927/mypage/compare/3.0.0...3.1.0

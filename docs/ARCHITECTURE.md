@@ -82,7 +82,7 @@ A holographic look in the spirit of the foil cards in Pokemon TCG Pocket, (the f
 **The numbers (`js/holo.js`).** Three sources feed one target position of "the light", smoothed frame by frame and written as custom properties on `<html>`:
 
 - the pointer (the mouse anywhere on the page; a finger while it is down),
-- the device's tilt (`deviceorientation`; used where the browser reports it freely, i.e. Android. **It is switched off on iOS and iPadOS**, which only report tilt after a system permission prompt; the effect is not worth interrupting anyone for, so there the pointer, touch and the idle drift drive it),
+- the device's tilt (`deviceorientation`; moves the foil and parallax but does not lean the card; used where the browser reports it freely, i.e. Android. **It is switched off on iOS and iPadOS**, which only report tilt after a system permission prompt; the effect is not worth interrupting anyone for, so there the pointer, touch and the idle drift drive it),
 - an idle drift (a slow figure-of-eight after 2.5 s without input, updated about 30 times a second and paused while the page is hidden), so the foil shimmers on a screen nobody is moving.
 
 The properties are `--px` / `--py` (-1..1), `--mx` / `--my` (0..1) and `--holo` (0..1, how strongly the foil shows). The hover tilt goes to `.card-tilt` as `--tilt-x` / `--tilt-y`.

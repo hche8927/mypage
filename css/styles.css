@@ -576,6 +576,16 @@ a {
     transition: background-color 0.18s ease;
 }
 
+/* The card dips and shifts under a press, so a small button can slide out from
+   under the pointer. An invisible ring makes the hit area generous (the
+   background highlight stays on the button itself). */
+.theme-toggle::after {
+    content: "";
+    position: absolute;
+    inset: -1.6em;
+    border-radius: 50%;
+}
+
 .theme-toggle:active { background-color: var(--active-bg); }
 
 @media (hover: hover) {
